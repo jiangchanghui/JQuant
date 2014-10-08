@@ -79,14 +79,5 @@ public class BollingerBreakout extends Strategy {
         }
     }
 
-    @Override
-    public void goLive() {
-        // check/get open trades from db
-        // check ib connenction
 
-        // request market data for trades.
-        // manage open trades (ib data handler)
-        // scan for new trades
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 }

@@ -77,12 +77,4 @@ public class SMACrossOver {
         }
         return trades;
     }
-    
-    private void forwardTest(){
-        throw new UnsupportedOperationException("Not supported yet."); 
-    }
-    
-    private void execute(){
-        throw new UnsupportedOperationException("Not supported yet."); 
-    }
 }

@@ -280,5 +280,4 @@ public abstract class Strategy {
     }
 
     public abstract void backtest();
-    public abstract void goLive();
 }
