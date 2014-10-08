@@ -10,6 +10,5 @@ package au.com.jquant.algotrader.strategy;
  * @author davidherod
  */
 public interface PreCloseStrategy {
-
     public void onPreClose();
 }

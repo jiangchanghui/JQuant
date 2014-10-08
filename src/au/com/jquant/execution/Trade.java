@@ -24,12 +24,15 @@ import java.util.List;
  */
 public class Trade {
 
-    private long id;
+    private int id;
     private String symbol;
     private int symbolId;
+    private String assetType;
+    private String positionType;
     private Date openDate;
     private double openPrice;
     private int quantity;
+    private String orderType;
     private double value;
     private Date closeDate;
     private double closePrice;
@@ -44,27 +47,94 @@ public class Trade {
     private double maxPositiveEquity;
     private boolean open;
 
-    public Trade() {
-    }
-    
-    public Trade(String symbol, Date openDate, double openPrice, double value, double slippage, double brokerage) {
+    /**
+     * Constructor with all required parameters to open a new trade.
+     * @param symbol
+     * @param symbolId
+     * @param assetType
+     * @param positionType
+     * @param quantity
+     * @param orderType
+     * @param signalOpenPrice 
+     */
+    public Trade( String symbol, int symbolId, String assetType, String positionType, int quantity, String orderType, double signalOpenPrice) {
         this.symbol = symbol;
-        this.openDate = openDate;
-        this.openPrice = openPrice;
-        this.value = value;
-        this.slippage = slippage;
-        this.brokerage = brokerage;
-
+        this.symbolId = symbolId;
+        this.assetType = assetType;
+        this.positionType = positionType;
+        this.quantity = quantity;
+        this.orderType = orderType;
+        this.signalOpenPrice = signalOpenPrice;
+        
         this.open = true;
-        this.quantity = (int) (value / openPrice);
+        this.id = 1; // TODO: create id generator;
     }
 
-    public Trade(long id, String symbol, Date openDate, double openPrice, int quantity, double value, Date closeDate, double closePrice, double signalOpenPrice, double signalClosePrice, double profitLoss, double profitLossPercentage, double slippage, double brokerage, int duration, double maxNegativeEquity, double maxPositiveEquity, boolean open) {
+    /** Constructor with all required parameters to create an open-trade instance.
+     * 
+     * @param id
+     * @param symbol
+     * @param symbolId
+     * @param assetType
+     * @param positionType
+     * @param openDate
+     * @param openPrice
+     * @param quantity
+     * @param orderType
+     * @param value
+     * @param signalOpenPrice
+     * @param open 
+     */
+    public Trade(int id, String symbol, int symbolId, String assetType, String positionType, Date openDate, double openPrice, int quantity, String orderType, double value, double signalOpenPrice, boolean open) {
         this.id = id;
         this.symbol = symbol;
+        this.symbolId = symbolId;
+        this.assetType = assetType;
+        this.positionType = positionType;
         this.openDate = openDate;
         this.openPrice = openPrice;
         this.quantity = quantity;
+        this.orderType = orderType;
+        this.value = value;
+        this.signalOpenPrice = signalOpenPrice;
+        this.open = open;
+    }
+    
+    /**
+     * Constructor with all required parameters to create a closed-trade instance.
+     * @param id
+     * @param symbol
+     * @param symbolId
+     * @param assetType
+     * @param positionType
+     * @param openDate
+     * @param openPrice
+     * @param quantity
+     * @param orderType
+     * @param value
+     * @param closeDate
+     * @param closePrice
+     * @param signalOpenPrice
+     * @param signalClosePrice
+     * @param profitLoss
+     * @param profitLossPercentage
+     * @param slippage
+     * @param brokerage
+     * @param duration
+     * @param maxNegativeEquity
+     * @param maxPositiveEquity
+     * @param open 
+     */
+    public Trade(int id, String symbol, int symbolId, String assetType, String positionType, Date openDate, double openPrice, int quantity, String orderType, double value, Date closeDate, double closePrice, double signalOpenPrice, double signalClosePrice, double profitLoss, double profitLossPercentage, double slippage, double brokerage, int duration, double maxNegativeEquity, double maxPositiveEquity, boolean open) {
+        this.id = id;
+        this.symbol = symbol;
+        this.symbolId = symbolId;
+        this.assetType = assetType;
+        this.positionType = positionType;
+        this.openDate = openDate;
+        this.openPrice = openPrice;
+        this.quantity = quantity;
+        this.orderType = orderType;
         this.value = value;
         this.closeDate = closeDate;
         this.closePrice = closePrice;
@@ -79,12 +149,36 @@ public class Trade {
         this.maxPositiveEquity = maxPositiveEquity;
         this.open = open;
     }
+    
+    public String getPositionType() {
+        return positionType;
+    }
 
-    public long getId() {
+    public void setPositionType(String positionType) {
+        this.positionType = positionType;
+    }
+    
+    public String getOrderType() {
+        return orderType;
+    }
+
+    public void setOrderType(String orderType) {
+        this.orderType = orderType;
+    }
+    
+    public String getAssetType() {
+        return assetType;
+    }
+
+    public void setAssetType(String assetType) {
+        this.assetType = assetType;
+    }
+
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 

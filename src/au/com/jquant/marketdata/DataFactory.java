@@ -33,6 +33,4 @@ public class DataFactory {
                 throw new Exception("Error: Not a valid dataset.");
         }
     }
-    
-    
 }

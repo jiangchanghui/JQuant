@@ -23,15 +23,15 @@ import java.sql.Date;
  */
 public class TradeFactory {
 
-    public static Trade getTrade(int broker, String symbol, Date openDate, double openPrice, int quantity, double value, double signalOpenPrice, double slippage, double brokerage, boolean open) {
-        switch (broker) {
-            case 0:
-                return new Trade(symbol, openDate, openPrice, value, signalOpenPrice, brokerage);
-            case 1: 
-                return new InteractiveBrokersTrade(symbol, openDate, openPrice, value, signalOpenPrice, brokerage);
-            default:
-                return new Trade(symbol, openDate, openPrice, value, signalOpenPrice, brokerage);
-        }
-    }
+//    public static Trade getTrade(int broker, String symbol, Date openDate, double openPrice, int quantity, double value, double signalOpenPrice, double slippage, double brokerage, boolean open) {
+//        switch (broker) {
+//            case 0:
+//                return new InteractiveBrokersTrade(broker, symbol, broker, symbol, symbol, quantity, symbol, signalOpenPrice)
+//            case 1: 
+//                return new InteractiveBrokersTrade(symbol, openDate, openPrice, value, signalOpenPrice, brokerage);
+//            default:
+//                return new Trade(symbol, openDate, openPrice, value, signalOpenPrice, brokerage);
+//        }
+//    }
 
 }

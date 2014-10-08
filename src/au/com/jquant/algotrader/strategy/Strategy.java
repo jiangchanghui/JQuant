@@ -1,10 +1,21 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2014 davidherod.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package au.com.jquant.algotrader.strategy;
 
+import au.com.jquant.algotrader.dataset.DatasetFactory;
 import au.com.jquant.asset.Asset;
 import au.com.jquant.execution.Trade;
 import java.util.List;
@@ -26,8 +37,7 @@ public class Strategy {
     protected List<Asset> targetAssets;
     protected List<Asset> realtimeAssets;
 
-     // TODO Retrieve any open trades from database so they can be managed.
-    
+     // TODO: Retrieve any open trades from database so they can be managed.
     
     public int getMaxAllocation() {
         return maxAllocation;
@@ -97,8 +107,8 @@ public class Strategy {
         return targetAssets;
     }
 
-    public void setTargetAssets(List<Asset> targetAssets) {
-        this.targetAssets = targetAssets;
+    public void setTargetAssets(int dataset) throws Exception {
+        this.targetAssets = DatasetFactory.getDataset(dataset);
     }
 
     public List<Asset> getRealtimeAssets() {

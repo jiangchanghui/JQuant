@@ -15,9 +15,8 @@
  */
 package au.com.jquant.execution;
 
-import au.com.jquant.algotrader.IBClient;
+
 import com.ib.client.Contract;
-import com.ib.client.EClientSocket;
 import static au.com.jquant.algotrader.IBAlgoTrader.*;
 import com.ib.client.Order;
 import java.util.Date;
@@ -30,34 +29,80 @@ import java.util.Date;
  */
 public class InteractiveBrokersTrade extends Trade {
 
-    public InteractiveBrokersTrade() {
-    }
+    private Contract contract;
+    private Order order;
     
-    public InteractiveBrokersTrade(String symbol, Date openDate, double openPrice, double value, double slippage, double brokerage) {
-        super(symbol, openDate, openPrice, value, slippage, brokerage);
+    /**
+     * Constructor with all required parameters to open a new interactivebrokers trade.
+     * @param symbol
+     * @param symbolId
+     * @param assetType
+     * @param positionType
+     * @param quantity
+     * @param orderType
+     * @param signalOpenPrice 
+     */
+    public InteractiveBrokersTrade(String symbol, int symbolId, String assetType, String positionType, int quantity, String orderType, double signalOpenPrice) {
+        super(symbol, symbolId, assetType, positionType, quantity, orderType, signalOpenPrice);
     }
 
+    /**
+     * Constructor with all required parameters to create an open instance of an interactivebrokers trade.
+     * @param id
+     * @param symbol
+     * @param symbolId
+     * @param assetType
+     * @param positionType
+     * @param openDate
+     * @param openPrice
+     * @param quantity
+     * @param orderType
+     * @param value
+     * @param signalOpenPrice
+     * @param open 
+     */
+    public InteractiveBrokersTrade(int id, String symbol, int symbolId, String assetType, String positionType, Date openDate, double openPrice, int quantity, String orderType, double value, double signalOpenPrice, boolean open) {
+        super(id, symbol, symbolId, assetType, positionType, openDate, openPrice, quantity, orderType, value, signalOpenPrice, open);
+    }
+
+    /**
+     * Opens a new trade.
+     */
     @Override
     public void open() {
 
-        Contract contract = new Contract();
-        Order order = new Order();
+        setOpenDate(new Date());
+        contract = new Contract();
+        order = new Order();
 
-        contract.m_symbol = "IBKR";
-        contract.m_secType = "STK";
+        contract.m_symbol = getSymbol();
+        contract.m_secType = getAssetType(); //STK
         contract.m_exchange = "SMART";
         contract.m_currency = "USD";
+        order.m_action = (getPositionType().equals("long") ? "BUY":"SELL"); // TODO validate input
+        order.m_totalQuantity = getQuantity();
+        order.m_orderType = getOrderType(); //MKT
 
-        order.m_action = "BUY";
-        order.m_totalQuantity = 100;
-        order.m_orderType = "MKT";
-
-        clientSocket.eConnect(null, 7496, 1);
-        clientSocket.placeOrder(1, contract, order);
+        clientSocket.placeOrder(getId(), contract, order);  
     }
 
+    /**
+     * Closes an open trade.
+     */
     @Override
     public void close() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        contract = new Contract();
+        order = new Order();
+
+        contract.m_symbol = getSymbol();
+        contract.m_secType = getAssetType(); //STK
+        contract.m_exchange = "SMART";
+        contract.m_currency = "USD";
+        order.m_action = (getPositionType().equals("long") ? "SELL":"BUY"); // TODO validate input
+        order.m_totalQuantity = getQuantity();
+        order.m_orderType = getOrderType(); //MKT
+
+        clientSocket.placeOrder(getId(), contract, order);
     }
 }

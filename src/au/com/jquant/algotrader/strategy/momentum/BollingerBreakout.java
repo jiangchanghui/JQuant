@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package au.com.jquant.algotrader.strategy;
+package au.com.jquant.algotrader.strategy.momentum;
 
+import au.com.jquant.algotrader.strategy.PreCloseStrategy;
+import au.com.jquant.algotrader.strategy.RealtimeStrategy;
+import au.com.jquant.algotrader.strategy.Strategy;
 import au.com.jquant.analytics.indicators.BollingerBands;
 import au.com.jquant.asset.Asset;
 import au.com.jquant.asset.Interval;
@@ -61,7 +64,7 @@ public class BollingerBreakout extends Strategy implements PreCloseStrategy, Rea
      * Closes all trades that are equal to or have exceeded their maximum holding
      * period.
      */
-    public void closeOnDurationCondition() {
+    private void closeOnDurationCondition() {
         for (Trade trade : openTrades) {
             if (daysOpen(trade.getOpenDate(), new Date()) >= maxHoldingPeriod) {
                 trade.close();
@@ -91,7 +94,7 @@ public class BollingerBreakout extends Strategy implements PreCloseStrategy, Rea
     /**
      * Scans and opens positions for assets that meet the open requirements.
      */
-    public void scanAndOpen() {
+    private void scanAndOpen() {
         // TODO Check market data is up to date
         DAOFactory df = new JDBCDAOFactory();
         for (Asset asset : targetAssets) {
@@ -101,10 +104,10 @@ public class BollingerBreakout extends Strategy implements PreCloseStrategy, Rea
             BollingerBands preBands = new BollingerBands(smaLengh, upperStdFactor, 0, intervals.subList(1, smaLengh +1));
             BollingerBands curBands = new BollingerBands(smaLengh, upperStdFactor, 0, intervals.subList(0, smaLengh));
 
-            // Open trades
             if (high > curBands.getUpperBand() && preHigh < preBands.getUpperBand() && positionOpenable()) {
-                Trade trade = new InteractiveBrokersTrade();
-                trade.open(); // TODO create method with appropriate parameters.
+                Trade trade = new InteractiveBrokersTrade(asset.getSymbol(), asset.getId(), asset.getDescription(), "long", getPositionSize(), "MKT", intervals.get(0).getClose());
+                trade.open();
+                openTrades.add(trade);
             }
         }
     }

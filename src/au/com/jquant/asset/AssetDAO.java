@@ -26,4 +26,5 @@ public interface AssetDAO {
     public int createAsset(Asset asset);
     public List<Asset> getSP500Historical();
     public List<Asset> getSP500Historical(String startDate, String endDate);
+    public List<Asset> getSP500();
 }

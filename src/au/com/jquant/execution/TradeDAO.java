@@ -12,5 +12,5 @@ import java.util.List;
  * @author davidherod
  */
 public interface TradeDAO {
-    public List<Trade> getBollingerBreakoutOpenTrades();
+    public List<Trade> getOpenTrades(String strategyID);
 }

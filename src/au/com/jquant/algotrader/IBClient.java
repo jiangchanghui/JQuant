@@ -33,7 +33,7 @@ public class IBClient implements EWrapper{
 
     @Override
     public void tickPrice(int tickerId, int field, double price, int canAutoExecute) {
-        //IBAlgoTrader.manageLiveTickData(field, price);       
+        IBAlgoTrader.manageLiveTickData(field, price);       
     }
 
     @Override

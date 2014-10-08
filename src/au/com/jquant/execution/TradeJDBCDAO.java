@@ -1,11 +1,20 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2014 davidherod.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package au.com.jquant.execution;
 
-import au.com.jquant.asset.Interval;
 import au.com.jquant.asset.stock.StockJDBCDAO;
 import au.com.jquant.factory.dao.JDBCDAOFactory;
 import java.sql.Connection;
@@ -22,23 +31,28 @@ import java.util.logging.Logger;
  *
  * @author davidherod
  */
-public class TradeJDBCDAO implements TradeDAO{
+public class TradeJDBCDAO implements TradeDAO {
 
     private Connection connection;
     private Statement statement;
     private ResultSet resultSet;
     private PreparedStatement preparedStatement;
-    
+
     @Override
-    public List<Trade> getBollingerBreakoutOpenTrades() {
-     List<Trade> trades = new ArrayList<>();
+    public List<Trade> getOpenTrades(String strategyID) {
+        List<Trade> trades = new ArrayList<>();
         try {
             connection = JDBCDAOFactory.createConnection();
-            statement = connection.createStatement();         
-            resultSet = statement.executeQuery("SELECT * FROM trades WHERE strategy = \"BollingerBreakout\" AND open = true;");
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery("SELECT * FROM trades WHERE strategy = \"" + strategyID + "\" AND open = true;");
 
             while (resultSet.next() == true) {
-                Trade trade = new Trade();
+                int id = resultSet.getInt("id");
+                String symbol = resultSet.getInt("symbol");
+                int symbolID = resultSet.getInt("symbol_id");
+                int
+                int
+                Trade trade = new InteractiveBrokersTrade(symbol, symbolID, symbol, symbol, Trade, strategyID, Trade) ;
                 trade.setSymbol(resultSet.getString("date"));
                 trades.add(trade);
             }

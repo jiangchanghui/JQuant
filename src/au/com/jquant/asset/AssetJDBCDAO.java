@@ -98,5 +98,10 @@ public class AssetJDBCDAO implements AssetDAO {
     @Override
     public List<Asset> getSP500Historical() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }   
+
+    @Override
+    public List<Asset> getSP500() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
