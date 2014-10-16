@@ -39,21 +39,23 @@ public class TradeJDBCDAO implements TradeDAO {
     private PreparedStatement preparedStatement;
 
     @Override
-    public List<Trade> getOpenTrades(String strategyID) {
+    public List<Trade> getOpenTrades(String strategy) {
         List<Trade> trades = new ArrayList<>();
         try {
             connection = JDBCDAOFactory.createConnection();
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM trades WHERE strategy = \"" + strategyID + "\" AND open = true;");
+            resultSet = statement.executeQuery("SELECT * FROM trades WHERE strategy = \"" + strategy + "\" AND open = true;");
 
             while (resultSet.next() == true) {
                 int id = resultSet.getInt("id");
-                String symbol = resultSet.getInt("symbol");
+                String symbol = resultSet.getString("symbol");
                 int symbolID = resultSet.getInt("symbol_id");
-                int
-                int
-                Trade trade = new InteractiveBrokersTrade(symbol, symbolID, symbol, symbol, Trade, strategyID, Trade) ;
+                String assetType = resultSet.getString("asset_type");
+
+                
                 trade.setSymbol(resultSet.getString("date"));
+                
+                Trade trade = new Trade(id, symbol, symbolID, assetType, assetType, null, id, id, assetType, id, symbolID, true)
                 trades.add(trade);
             }
 

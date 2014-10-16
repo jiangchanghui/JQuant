@@ -21,19 +21,18 @@ import com.ib.client.ContractDetails;
 import com.ib.client.EWrapper;
 import com.ib.client.Execution;
 import com.ib.client.Order;
-import com.ib .client.OrderState;
+import com.ib.client.OrderState;
 import com.ib.client.UnderComp;
-
 
 /**
  *
  * @author davidherod
  */
-public class IBClient implements EWrapper{
+public class IBClient implements EWrapper {
 
     @Override
     public void tickPrice(int tickerId, int field, double price, int canAutoExecute) {
-        IBAlgoTrader.manageLiveTickData(field, price);       
+        IBAlgoTrader.manageLiveTickData(field, price);
     }
 
     @Override
@@ -143,7 +142,7 @@ public class IBClient implements EWrapper{
 
     @Override
     public void managedAccounts(String accountsList) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println(accountsList);
     }
 
     @Override
@@ -253,17 +252,17 @@ public class IBClient implements EWrapper{
 
     @Override
     public void error(String str) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println(str);
     }
 
     @Override
     public void error(int id, int errorCode, String errorMsg) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println(id + " " + " " + errorCode + " " + errorMsg);
     }
 
     @Override
     public void connectionClosed() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println("TWS Connection Closed");
     }
-    
+
 }

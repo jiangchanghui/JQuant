@@ -20,13 +20,11 @@ import au.com.jquant.algotrader.strategy.momentum.BollingerBreakout;
 import au.com.jquant.algotrader.strategy.Strategy;
 import static au.com.jquant.backtest.strategy.Strategy.DATASET_SP500;
 
-
-
 /**
  *
  * @author davidherod
  */
-public class JQuant {
+public class Main {
 
     /**     
      * @param args the command line arguments

@@ -83,7 +83,7 @@ public class InteractiveBrokersTrade extends Trade {
         order.m_totalQuantity = getQuantity();
         order.m_orderType = getOrderType(); //MKT
 
-        clientSocket.placeOrder(getId(), contract, order);  
+        ibClient.placeOrder(getId(), contract, order);  
     }
 
     /**
@@ -103,6 +103,6 @@ public class InteractiveBrokersTrade extends Trade {
         order.m_totalQuantity = getQuantity();
         order.m_orderType = getOrderType(); //MKT
 
-        clientSocket.placeOrder(getId(), contract, order);
+        ibClient.placeOrder(getId(), contract, order);
     }
 }

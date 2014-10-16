@@ -15,11 +15,15 @@
  */
 package au.com.jquant.algotrader;
 
+import au.com.jquant.algotrader.strategy.OpenStrategy;
+import au.com.jquant.algotrader.strategy.PreCloseStrategy;
 import au.com.jquant.algotrader.strategy.RealtimeStrategy;
 import au.com.jquant.asset.Asset;
 import au.com.jquant.algotrader.strategy.Strategy;
 import au.com.jquant.algotrader.timer.PreCloseTimer;
 import com.ib.client.EClientSocket;
+import com.ib.client.TagValue;
+import com.ib.contracts.StkContract;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,36 +36,52 @@ import java.util.Timer;
 public class IBAlgoTrader {
 
     public static List<Strategy> strategies = new ArrayList<>();
-    private final Timer preCloseTimer = new Timer("PreCloseTimer");
-    private final Date preCloseTime = new Date(); // TODO set preclose date
-    private static final IBClient iBClient = new IBClient();
-    public static final EClientSocket clientSocket = new EClientSocket(iBClient);
+    private Timer preCloseTimer; 
+    private Timer openTimer;
+    private final Date preCloseTime = new Date(); // TODO set preclose time
+    public static final EClientSocket ibClient = new EClientSocket(new IBWrapper());
 
-    public IBAlgoTrader() {  
+    public IBAlgoTrader() {
     }
-
+    
+    /**
+     * Adds a strategy to list of strategies that will be executed.
+     * @param strategy 
+     */
     public void addStrategy(Strategy strategy) {
         strategies.add(strategy);
     }
 
-    public void execute() throws Exception {
-        clientSocket.eConnect(null, 7496, 1);
-        if (clientSocket.isConnected()) {
-            preCloseTimer.schedule(new PreCloseTimer(strategies), preCloseTime, 86400000);
+    /**
+     * Executes the list of given strategies.
+     * @throws Exception 
+     */
+    public void execute() throws Exception {     
+        ibClient.eConnect(null, 7496, 0);
+        if (ibClient.isConnected()) {
+            startTimers();
             reqRealTimeData();
-        }else{
+        } else {
             throw new Exception("Error: could not connect to TWS");
         }
     }
 
+    /**
+     * Requests real-time data for strategies and assets that require it.
+     */
     public void reqRealTimeData() {
         for (Strategy s : strategies) {
             for (Asset a : s.getRealtimeAssets()) {
-                clientSocket.reqMktData(a.getId(), null, null, true, null);
+                ibClient.reqMktData(a.getId(), new StkContract(a.getSymbol()), null, false, new ArrayList<TagValue>());
             }
         }
     }
 
+    /**
+     * Calls the onTick method of strategies that require real-time date when new data of target assets becomes available via TWS. 
+     * @param symbolId
+     * @param price 
+     */
     public static void manageLiveTickData(int symbolId, double price) {
         for (Strategy strategy : strategies) {
             if (strategy instanceof RealtimeStrategy) {
@@ -74,5 +94,26 @@ public class IBAlgoTrader {
             }
         }
     }
-  
+
+    /**
+     * Starts the required timers for the list of strategies.
+     */
+    private void startTimers() {
+        boolean preCloseIsRunning = false;
+        boolean openStrategyIsRunning = false;
+        
+        for (Strategy s : strategies) {
+            if (s instanceof PreCloseStrategy && !preCloseIsRunning) {
+                preCloseTimer = new Timer("PreCloseTimer");
+                preCloseTimer.schedule(new PreCloseTimer(strategies), preCloseTime, 86400000);
+                preCloseIsRunning = true;
+            }
+            if(s instanceof OpenStrategy && !openStrategyIsRunning){
+                openTimer = new Timer("OpenTimer");
+                openTimer.schedule(new PreCloseTimer(strategies), preCloseTime, 86400000);
+                preCloseIsRunning = true;
+            }
+        }
+    }
+
 }

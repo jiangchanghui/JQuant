@@ -39,6 +39,8 @@ import java.util.List;
  * @author davidherod
  * @throws java.lang.Exception
  */
+
+// TODO: Evaluate concurrency issues.
 public class BollingerBreakout extends Strategy implements PreCloseStrategy, RealtimeStrategy {
 
     private final int smaLengh;
@@ -81,8 +83,8 @@ public class BollingerBreakout extends Strategy implements PreCloseStrategy, Rea
      * @param lastPrice
      */
     private void closeOnPercentageChange(int symbolId, double lastPrice) {
-        for (Trade trade : openTrades) {
-            if (trade.getSymbolId() == symbolId) {
+        for (Trade trade : openTrades) { 
+            if (trade.getSymbolId() == symbolId) { // TODO and days open is > 0
                 if (pctChng(trade.getOpenPrice(), lastPrice) >= targetPercentageChange) {
                     trade.close();
                     openTrades.remove(trade);

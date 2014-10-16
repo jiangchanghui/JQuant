@@ -15,7 +15,9 @@
  */
 package au.com.jquant.execution;
 
+import au.com.jquant.algotrader.strategy.Strategy;
 import java.sql.Date;
+import java.util.List;
 
 /**
  *
