@@ -62,7 +62,8 @@ public class InteractiveBrokersTrade extends Trade {
      * @param open 
      */
     public InteractiveBrokersTrade(int id, String symbol, int symbolId, String assetType, String positionType, Date openDate, double openPrice, int quantity, String orderType, double value, double signalOpenPrice, boolean open) {
-        super(id, symbol, symbolId, assetType, positionType, openDate, openPrice, quantity, orderType, value, signalOpenPrice, open);
+        //super(id, symbol, symbolId, assetType, positionType, openDate, openPrice, quantity, orderType, value, signalOpenPrice, open);
+        super(symbol, symbolId, assetType, positionType, quantity, orderType, signalOpenPrice); // check this
     }
 
     /**

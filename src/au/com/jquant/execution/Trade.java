@@ -25,6 +25,7 @@ import java.util.List;
 public class Trade {
 
     private int id;
+    private String strategy;
     private String symbol;
     private int symbolId;
     private String assetType;
@@ -73,6 +74,7 @@ public class Trade {
     /** Constructor with all required parameters to create an open-trade instance.
      * 
      * @param id
+     * @param strategy
      * @param symbol
      * @param symbolId
      * @param assetType
@@ -85,8 +87,9 @@ public class Trade {
      * @param signalOpenPrice
      * @param open 
      */
-    public Trade(int id, String symbol, int symbolId, String assetType, String positionType, Date openDate, double openPrice, int quantity, String orderType, double value, double signalOpenPrice, boolean open) {
+    public Trade(int id, String strategy, int symbolId, String symbol, String assetType, String positionType, Date openDate, double openPrice, int quantity, String orderType, double value, double signalOpenPrice, boolean open) {
         this.id = id;
+        this.strategy = strategy;
         this.symbol = symbol;
         this.symbolId = symbolId;
         this.assetType = assetType;
@@ -148,6 +151,14 @@ public class Trade {
         this.maxNegativeEquity = maxNegativeEquity;
         this.maxPositiveEquity = maxPositiveEquity;
         this.open = open;
+    }
+
+    public String getStrategy() {
+        return strategy;
+    }
+
+    public void setStrategy(String strategy) {
+        this.strategy = strategy;
     }
     
     public String getPositionType() {

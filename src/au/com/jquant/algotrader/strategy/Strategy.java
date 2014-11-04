@@ -18,7 +18,6 @@ package au.com.jquant.algotrader.strategy;
 import au.com.jquant.algotrader.dataset.DatasetFactory;
 import au.com.jquant.asset.Asset;
 import au.com.jquant.execution.Trade;
-import au.com.jquant.execution.TradeFactory;
 import au.com.jquant.execution.TradeJDBCDAO;
 import java.util.List;
 
@@ -40,13 +39,12 @@ public class Strategy {
     protected List<Asset> realtimeAssets;
 
      // TODO: Retrieve any open trades from database so they can be managed.
+    // create interface for where real time position monitoring to close requested
 
     public Strategy() {
-        this.openTrades = new TradeJDBCDAO().getOpenTrades(this.getClass().getSimpleName());
-        this.realtimeAssets = realtimeAssets;
+        this.openTrades = new TradeJDBCDAO().getOpenTrades(this.getClass().getSimpleName());      
     }
-    
-    
+ 
     public int getMaxAllocation() {
         return maxAllocation;
     }

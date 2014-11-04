@@ -17,10 +17,12 @@ package au.com.jquant.algotrader;
 
 import au.com.jquant.algotrader.strategy.OpenStrategy;
 import au.com.jquant.algotrader.strategy.PreCloseStrategy;
+import au.com.jquant.algotrader.strategy.RealtimePositionMonitor;
 import au.com.jquant.algotrader.strategy.RealtimeStrategy;
 import au.com.jquant.asset.Asset;
 import au.com.jquant.algotrader.strategy.Strategy;
 import au.com.jquant.algotrader.timer.PreCloseTimer;
+import au.com.jquant.execution.Trade;
 import com.ib.client.EClientSocket;
 import com.ib.client.TagValue;
 import com.ib.contracts.StkContract;
@@ -36,17 +38,19 @@ import java.util.Timer;
 public class IBAlgoTrader {
 
     public static List<Strategy> strategies = new ArrayList<>();
-    private Timer preCloseTimer; 
+    private Timer preCloseTimer;
     private Timer openTimer;
     private final Date preCloseTime = new Date(); // TODO set preclose time
     public static final EClientSocket ibClient = new EClientSocket(new IBWrapper());
+    private final List<Asset> liveTickers = new ArrayList<>();
 
     public IBAlgoTrader() {
     }
-    
+
     /**
      * Adds a strategy to list of strategies that will be executed.
-     * @param strategy 
+     *
+     * @param strategy
      */
     public void addStrategy(Strategy strategy) {
         strategies.add(strategy);
@@ -54,9 +58,10 @@ public class IBAlgoTrader {
 
     /**
      * Executes the list of given strategies.
-     * @throws Exception 
+     *
+     * @throws Exception
      */
-    public void execute() throws Exception {     
+    public void execute() throws Exception {
         ibClient.eConnect(null, 7496, 0);
         if (ibClient.isConnected()) {
             startTimers();
@@ -67,20 +72,30 @@ public class IBAlgoTrader {
     }
 
     /**
-     * Requests real-time data for strategies and assets that require it.
+     * Requests real-time data for assets of strategies that require it.
      */
     public void reqRealTimeData() {
         for (Strategy s : strategies) {
-            for (Asset a : s.getRealtimeAssets()) {
-                ibClient.reqMktData(a.getId(), new StkContract(a.getSymbol()), null, false, new ArrayList<TagValue>());
+            if (s instanceof RealtimeStrategy) {
+                for (Asset a : s.getTargetAssets()) {
+                    ibClient.reqMktData(a.getId(), new StkContract(a.getSymbol()), null, false, new ArrayList<TagValue>());
+                }
+                if (s instanceof RealtimePositionMonitor) { // and ticker is not already being used
+                    for (Trade t : s.getOpenTrades()) {
+                        ibClient.reqMktData(t.getId(), new StkContract(t.getSymbol()), null, false, new ArrayList<TagValue>());
+                    }
+                }
             }
         }
+
     }
 
     /**
-     * Calls the onTick method of strategies that require real-time date when new data of target assets becomes available via TWS. 
+     * Calls the onTick method of strategies that require real-time date when
+     * new data of target assets becomes available via TWS.
+     *
      * @param symbolId
-     * @param price 
+     * @param price
      */
     public static void manageLiveTickData(int symbolId, double price) {
         for (Strategy strategy : strategies) {
@@ -96,19 +111,19 @@ public class IBAlgoTrader {
     }
 
     /**
-     * Starts the required timers for the list of strategies.
+     * Starts the timers required by the list of strategies.
      */
     private void startTimers() {
         boolean preCloseIsRunning = false;
         boolean openStrategyIsRunning = false;
-        
+
         for (Strategy s : strategies) {
             if (s instanceof PreCloseStrategy && !preCloseIsRunning) {
                 preCloseTimer = new Timer("PreCloseTimer");
                 preCloseTimer.schedule(new PreCloseTimer(strategies), preCloseTime, 86400000);
                 preCloseIsRunning = true;
             }
-            if(s instanceof OpenStrategy && !openStrategyIsRunning){
+            if (s instanceof OpenStrategy && !openStrategyIsRunning) {
                 openTimer = new Timer("OpenTimer");
                 openTimer.schedule(new PreCloseTimer(strategies), preCloseTime, 86400000);
                 preCloseIsRunning = true;

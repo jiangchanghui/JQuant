@@ -23,6 +23,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,18 +45,23 @@ public class TradeJDBCDAO implements TradeDAO {
         try {
             connection = JDBCDAOFactory.createConnection();
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM trades WHERE strategy = \"" + strategy + "\" AND open = true;");
+            resultSet = statement.executeQuery("SELECT * FROM trades WHERE strategy = \"" + strategy + "\" AND open = true;"); // TODO test code. and join on symbol id to get symbol.
 
             while (resultSet.next() == true) {
                 int id = resultSet.getInt("id");
-                String symbol = resultSet.getString("symbol");
-                int symbolID = resultSet.getInt("symbol_id");
+                int symbolId = resultSet.getInt("symbol_id");
+                String symbol = resultSet.getString("strategy");           
                 String assetType = resultSet.getString("asset_type");
-
+                String positionType = resultSet.getString("position_type");
+                Date openDate = resultSet.getDate("position_type");
+                int openPrice = resultSet.getInt("open_price");
+                int quantity = resultSet.getInt("quantity");
+                String orderType = resultSet.getString("order_type");
+                int value = resultSet.getInt("value");
+                double signalOpenPrice = resultSet.getDouble("signal_open_price");
+                boolean isOpen = resultSet.getBoolean("open");
                 
-                trade.setSymbol(resultSet.getString("date"));
-                
-                Trade trade = new Trade(id, symbol, symbolID, assetType, assetType, null, id, id, assetType, id, symbolID, true)
+                Trade trade = new Trade(id, strategy, symbolId, symbol, assetType, positionType, openDate, openPrice, quantity, orderType, value, signalOpenPrice, isOpen);
                 trades.add(trade);
             }
 
