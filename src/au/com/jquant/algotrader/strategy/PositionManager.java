@@ -16,9 +16,9 @@
 package au.com.jquant.algotrader.strategy;
 
 /**
- *
+ * This interface is to be implemented by strategies that require open positions to be managed in real-time (per tick basis).
  * @author davidherod
  */
-public interface RealtimePositionMonitor {
-    
+public interface PositionManager {
+    public void checkCloseCondition(int symbolId, double lastPrice);
 }

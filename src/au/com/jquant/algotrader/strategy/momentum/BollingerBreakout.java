@@ -15,6 +15,7 @@
  */
 package au.com.jquant.algotrader.strategy.momentum;
 
+import au.com.jquant.algotrader.strategy.PositionManager;
 import au.com.jquant.algotrader.strategy.PreCloseStrategy;
 import au.com.jquant.algotrader.strategy.RealtimeStrategy;
 import au.com.jquant.algotrader.strategy.Strategy;
@@ -41,7 +42,7 @@ import java.util.List;
  */
 
 // TODO: Evaluate concurrency issues.
-public class BollingerBreakout extends Strategy implements PreCloseStrategy, RealtimeStrategy {
+public class BollingerBreakout extends Strategy implements PreCloseStrategy, PositionManager {
 
     private final int smaLengh;
     private final double upperStdFactor;
@@ -115,15 +116,17 @@ public class BollingerBreakout extends Strategy implements PreCloseStrategy, Rea
     }
 
     @Override
-    public void onTick(int symbolId, double lastPrice) {
-        closeOnPercentageChange(symbolId, lastPrice);
-    }
-
-    @Override
     public void onPreClose() {
         if (openTrades.size() > 0) { // Check if open trades exist and if they need to be closed based on duration rule.
             closeOnDurationCondition();
         }
         scanAndOpen();
     }
+
+    @Override
+    public void checkCloseCondition(int symbolId, double lastPrice) {
+        closeOnPercentageChange(symbolId, lastPrice);
+    }
+
+
 }

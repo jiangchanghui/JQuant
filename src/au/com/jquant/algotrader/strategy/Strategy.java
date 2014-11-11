@@ -36,9 +36,8 @@ public class Strategy {
     private boolean randomiseDataset;
     protected List<Trade> openTrades;
     protected List<Asset> targetAssets;
-    protected List<Asset> realtimeAssets;
 
-     // TODO: Retrieve any open trades from database so they can be managed.
+    // TODO: Retrieve any open trades from database so they can be managed.
     // create interface for where real time position monitoring to close requested
 
     public Strategy() {
@@ -116,13 +115,9 @@ public class Strategy {
     public void setTargetAssets(int dataset) throws Exception {
         this.targetAssets = DatasetFactory.getDataset(dataset);
     }
-
-    public List<Asset> getRealtimeAssets() {
-        return realtimeAssets;
-    }
-
-    public void setRealtimeAssets(List<Asset> realtimeAssets) {
-        this.realtimeAssets = realtimeAssets;
+    
+    public void setTargetAssets(List<Asset> assetList) throws Exception {
+        this.targetAssets = assetList;
     }
 
     protected boolean positionOpenable() {

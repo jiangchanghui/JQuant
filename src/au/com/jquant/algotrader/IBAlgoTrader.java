@@ -17,12 +17,13 @@ package au.com.jquant.algotrader;
 
 import au.com.jquant.algotrader.strategy.OpenStrategy;
 import au.com.jquant.algotrader.strategy.PreCloseStrategy;
-import au.com.jquant.algotrader.strategy.RealtimePositionMonitor;
+import au.com.jquant.algotrader.strategy.PositionManager;
 import au.com.jquant.algotrader.strategy.RealtimeStrategy;
 import au.com.jquant.asset.Asset;
 import au.com.jquant.algotrader.strategy.Strategy;
 import au.com.jquant.algotrader.timer.PreCloseTimer;
 import au.com.jquant.execution.Trade;
+import com.ib.client.Contract;
 import com.ib.client.EClientSocket;
 import com.ib.client.TagValue;
 import com.ib.contracts.StkContract;
@@ -78,16 +79,22 @@ public class IBAlgoTrader {
         for (Strategy s : strategies) {
             if (s instanceof RealtimeStrategy) {
                 for (Asset a : s.getTargetAssets()) {
-                    ibClient.reqMktData(a.getId(), new StkContract(a.getSymbol()), null, false, new ArrayList<TagValue>());
+                    //ibClient.reqMktData(a.getId(), new StkContract(a.getSymbol()), null, false, new ArrayList<TagValue>());
+                    
+                    Contract contract = new Contract();
+                    contract.m_symbol = "aud"; //AUD
+                    contract.m_secType = "cash"; //CASH
+                    contract.m_exchange = "IDEALPRO"; //IDEALPRO
+                    contract.m_currency = "USD";
+                     ibClient.reqMktData(a.getId(), contract, null, false, new ArrayList<TagValue>());
                 }
-                if (s instanceof RealtimePositionMonitor) { // and ticker is not already being used
+                if (s instanceof PositionManager) { // and ticker is not already being used
                     for (Trade t : s.getOpenTrades()) {
                         ibClient.reqMktData(t.getId(), new StkContract(t.getSymbol()), null, false, new ArrayList<TagValue>());
                     }
                 }
             }
         }
-
     }
 
     /**
@@ -100,7 +107,7 @@ public class IBAlgoTrader {
     public static void manageLiveTickData(int symbolId, double price) {
         for (Strategy strategy : strategies) {
             if (strategy instanceof RealtimeStrategy) {
-                for (Asset a : strategy.getRealtimeAssets()) {
+                for (Asset a : strategy.getTargetAssets()) {
                     if (a.getId() == symbolId) {
                         RealtimeStrategy realtimeStrategy = (RealtimeStrategy) strategy;
                         realtimeStrategy.onTick(symbolId, price);

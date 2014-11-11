@@ -116,6 +116,7 @@ public class AssetJDBCDAO implements AssetDAO {
                 stock.setIndustrySector(resultSet.getString("industry_sector"));
                 stock.setIndustryGroup(resultSet.getString("industry_group"));
                 stock.setMarketCap(resultSet.getLong("market_cap"));
+                assets.add(stock);
             }
 
         } catch (ClassNotFoundException | SQLException ex) {
