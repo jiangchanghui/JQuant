@@ -17,7 +17,6 @@ package au.com.jquant.algotrader.strategy.momentum;
 
 import au.com.jquant.algotrader.strategy.PositionManager;
 import au.com.jquant.algotrader.strategy.PreCloseStrategy;
-import au.com.jquant.algotrader.strategy.RealtimeStrategy;
 import au.com.jquant.algotrader.strategy.Strategy;
 import au.com.jquant.analytics.indicators.BollingerBands;
 import au.com.jquant.asset.Asset;
@@ -40,7 +39,6 @@ import java.util.List;
  * @author davidherod
  * @throws java.lang.Exception
  */
-
 // TODO: Evaluate concurrency issues.
 public class BollingerBreakout extends Strategy implements PreCloseStrategy, PositionManager {
 
@@ -64,8 +62,8 @@ public class BollingerBreakout extends Strategy implements PreCloseStrategy, Pos
     }
 
     /**
-     * Closes all trades that are equal to or have exceeded their maximum holding
-     * period.
+     * Closes all trades that are equal to or have exceeded their maximum
+     * holding period.
      */
     private void closeOnDurationCondition() {
         for (Trade trade : openTrades) {
@@ -84,7 +82,7 @@ public class BollingerBreakout extends Strategy implements PreCloseStrategy, Pos
      * @param lastPrice
      */
     private void closeOnPercentageChange(int symbolId, double lastPrice) {
-        for (Trade trade : openTrades) { 
+        for (Trade trade : openTrades) {
             if (trade.getSymbolId() == symbolId) { // TODO and days open is > 0
                 if (pctChng(trade.getOpenPrice(), lastPrice) >= targetPercentageChange) {
                     trade.close();
@@ -101,16 +99,19 @@ public class BollingerBreakout extends Strategy implements PreCloseStrategy, Pos
         // TODO Check market data is up to date
         DAOFactory df = new JDBCDAOFactory();
         for (Asset asset : targetAssets) {
-            List<Interval> intervals = df.getStockDAO().getHistoricalDaily(asset.getSymbol(), "", "");     // TODO create method that retrieves intervals required for BB calculation based on SMA  
-            double high = intervals.get(0).getHigh();
-            double preHigh = intervals.get(1).getHigh();
-            BollingerBands preBands = new BollingerBands(smaLengh, upperStdFactor, 0, intervals.subList(1, smaLengh +1));
-            BollingerBands curBands = new BollingerBands(smaLengh, upperStdFactor, 0, intervals.subList(0, smaLengh));
+            List<Interval> intervals = df.getStockDAO().getHistoricalDaily(asset.getSymbol(), smaLengh +1);
+            if (intervals.size() > 0) { // Check that historical exists for symbol.
+                double high = intervals.get(0).getHigh();
+                double preHigh = intervals.get(1).getHigh();
+                double preUpperBand = BollingerBands.calculateUpperBand(2.5, intervals.subList(1, smaLengh + 1));
+                double curUpperBand = BollingerBands.calculateUpperBand(2.5, intervals.subList(0, smaLengh));
 
-            if (high > curBands.getUpperBand() && preHigh < preBands.getUpperBand() && positionOpenable()) {
-                Trade trade = new InteractiveBrokersTrade(asset.getSymbol(), asset.getId(), asset.getDescription(), "long", getPositionSize(), "MKT", intervals.get(0).getClose());
-                trade.open();
-                openTrades.add(trade);
+                if (high > curUpperBand && preHigh < preUpperBand && positionOpenable()) {
+                    System.out.println(asset.getSymbol());
+                    //Trade trade = new InteractiveBrokersTrade(asset,"long", 100, "MKT");
+                    //trade.open();
+                    //openTrades.add(trade);
+                }
             }
         }
     }
@@ -127,6 +128,5 @@ public class BollingerBreakout extends Strategy implements PreCloseStrategy, Pos
     public void checkCloseCondition(int symbolId, double lastPrice) {
         closeOnPercentageChange(symbolId, lastPrice);
     }
-
 
 }

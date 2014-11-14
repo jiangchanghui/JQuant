@@ -15,6 +15,7 @@
  */
 package au.com.jquant.algotrader;
 
+import au.com.jquant.algotrader.strategy.FiveMinuteStrategy;
 import au.com.jquant.algotrader.strategy.OpenStrategy;
 import au.com.jquant.algotrader.strategy.PreCloseStrategy;
 import au.com.jquant.algotrader.strategy.PositionManager;
@@ -39,11 +40,14 @@ import java.util.Timer;
 public class IBAlgoTrader {
 
     public static List<Strategy> strategies = new ArrayList<>();
+    private Timer fiveMinuteTimer;
     private Timer preCloseTimer;
     private Timer openTimer;
     private final Date preCloseTime = new Date(); // TODO set preclose time
     public static final EClientSocket ibClient = new EClientSocket(new IBWrapper());
     private final List<Asset> liveTickers = new ArrayList<>();
+    public static int nextvalidTradeID;
+    private boolean marketOpen;
 
     public IBAlgoTrader() {
     }
@@ -121,10 +125,16 @@ public class IBAlgoTrader {
      * Starts the timers required by the list of strategies.
      */
     private void startTimers() {
+        
+        // TODO Check time for changes  
+        // TODO Check timezone is New York
+        
+        //boolean fiveMinuteIsRunning = false;
         boolean preCloseIsRunning = false;
         boolean openStrategyIsRunning = false;
 
         for (Strategy s : strategies) {
+            
             if (s instanceof PreCloseStrategy && !preCloseIsRunning) {
                 preCloseTimer = new Timer("PreCloseTimer");
                 preCloseTimer.schedule(new PreCloseTimer(strategies), preCloseTime, 86400000);

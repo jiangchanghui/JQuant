@@ -40,9 +40,10 @@ public class UpdateService implements Runnable {
     }
 
     private void updateStock() throws JAXBException, IOException {
-        DAOFactory jdbcDao = DAOFactory.getDAOFactory(DAOFactory.JDBC);       
-        StockDAO stockDao = jdbcDao.getStockDAO();
-        List<Interval> intervals = YahooClient.getDailyHistoricalData(symbol, "1998-01-01", "1999-01-01");
+        //DAOFactory jdbcDao = DAOFactory.getDAOFactory(DAOFactory.JDBC);       
+        //StockDAO stockDao = jdbcDao.getStockDAO();
+        StockDAO stockDao = new StockJDBCDAO();
+        List<Interval> intervals = YahooClient.getDailyHistoricalData(symbol, "2014-09-01", "2014-11-13");
         stockDao.setHistoricalDaily(symbol, intervals);
     }
 

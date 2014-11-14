@@ -70,7 +70,6 @@ public class IBWrapper implements EWrapper {
         System.out.println(status);
         System.out.println(filled);
         System.out.println(remaining);
-
     }
 
     @Override
@@ -116,6 +115,7 @@ public class IBWrapper implements EWrapper {
     public void nextValidId(int orderId) {
         System.out.println("nextvalidid");
         System.out.println(orderId);
+        IBAlgoTrader.nextvalidTradeID = orderId;
     }
 
     @Override
@@ -175,7 +175,7 @@ public class IBWrapper implements EWrapper {
 
     @Override
     public void historicalData(int reqId, String date, double open, double high, double low, double close, int volume, int count, double WAP, boolean hasGaps) {
-        System.out.println(reqId + " " + date + " " + open + " " + high + " " + low +" " + close + " " + volume);
+        System.out.println(reqId + " " + date + " " + open + " " + high + " " + low + " " + close + " " + volume);
         //System.out.println("historicalData");
     }
 
@@ -203,7 +203,7 @@ public class IBWrapper implements EWrapper {
     @Override
     public void currentTime(long time) {
         System.out.println("currenttime");
-        System.out.println(new Date(time));
+        System.out.println(new Date(time * 1000));
     }
 
     @Override

@@ -64,7 +64,7 @@ public class BollingerBands {
     }
 
     // TODO add support for open, high and low
-    public double calculateUpperBand(double factor, List<Interval> intervals) {
+    public static double calculateUpperBand(double factor, List<Interval> intervals) {
         double std = 0;
         double average = new MovingAverage().getSimpleMovingAverage(intervals);
         for (int i = 0; i < intervals.size(); i++) {

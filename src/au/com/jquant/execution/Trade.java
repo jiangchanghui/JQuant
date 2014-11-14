@@ -15,6 +15,7 @@
  */
 package au.com.jquant.execution;
 
+import au.com.jquant.asset.Asset;
 import java.util.Date;
 import java.util.List;
 
@@ -50,25 +51,19 @@ public class Trade {
 
     /**
      * Constructor with all required parameters to open a new trade.
-     * @param symbol
-     * @param symbolId
-     * @param assetType
+     * @param asset
      * @param positionType
      * @param quantity
-     * @param orderType
-     * @param signalOpenPrice 
+     * @param orderType 
      */
-    public Trade( String symbol, int symbolId, String assetType, String positionType, int quantity, String orderType, double signalOpenPrice) {
-        this.symbol = symbol;
-        this.symbolId = symbolId;
-        this.assetType = assetType;
+    public Trade(Asset asset, String positionType, int quantity, String orderType) {    
+        this.symbolId = asset.getId();
+        this.symbol = asset.getSymbol();  
+        this.assetType = asset.getClass().getSimpleName();
         this.positionType = positionType;
         this.quantity = quantity;
-        this.orderType = orderType;
-        this.signalOpenPrice = signalOpenPrice;
-        
+        this.orderType = orderType;      
         this.open = true;
-        this.id = 1; // TODO: create id generator;
     }
 
     /** Constructor with all required parameters to create an open-trade instance.

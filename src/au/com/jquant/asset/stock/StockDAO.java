@@ -35,5 +35,6 @@ public interface StockDAO {
     public List<Interval> getSP500HistoricalDaily(String startDate, String endDate);
     public List<Interval> getHistoricalDaily(String ticker, String startDate, String endDate);
     public List<Interval> getHistoricalDaily(String ticker);
+    public List<Interval> getHistoricalDaily(String ticker, int periods);
     public int setHistoricalDaily(String ticker, List<Interval> intervals);
 }

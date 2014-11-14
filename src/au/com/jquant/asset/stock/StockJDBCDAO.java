@@ -419,4 +419,61 @@ public class StockJDBCDAO implements StockDAO {
         }
         return intervals;
     }
+    /**
+     * 
+     * @param ticker
+     * @param periods
+     * @return 
+     */
+    @Override
+    public List<Interval> getHistoricalDaily(String ticker, int periods) {
+        List<Interval> intervals = new ArrayList<>();
+        try {
+            connection = JDBCDAOFactory.createConnection();
+            preparedStatement = connection.prepareStatement("SELECT * FROM historical_daily where ticker = ? order by date desc limit ?");
+            preparedStatement.setString(1, ticker);
+            preparedStatement.setInt(2, periods);
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next() == true) {
+                Interval interval = new Interval();
+                interval.setDate(resultSet.getDate("date"));
+                interval.setOpen(resultSet.getDouble("open"));
+                interval.setHigh(resultSet.getDouble("high"));
+                interval.setLow(resultSet.getDouble("low"));
+                interval.setClose(resultSet.getDouble("close"));
+                interval.setVolume(resultSet.getLong("volume"));
+                interval.setAdjClose(resultSet.getDouble("close_adj"));
+
+                intervals.add(interval);
+
+            }
+
+        } catch (ClassNotFoundException | SQLException ex) {
+            System.out.println(ex);
+        } finally {
+            if (resultSet != null) {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                
+                }
+            }
+            if (preparedStatement != null) {
+                try {
+                    preparedStatement.close();
+                } catch (SQLException e) {
+                
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    
+                }
+            }
+        }
+        return intervals;
+    }
 }

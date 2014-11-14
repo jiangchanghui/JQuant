@@ -15,13 +15,12 @@
  */
 package au.com.jquant.execution;
 
-
+import au.com.jquant.algotrader.IBAlgoTrader;
 import com.ib.client.Contract;
 import static au.com.jquant.algotrader.IBAlgoTrader.*;
+import au.com.jquant.asset.Asset;
 import com.ib.client.Order;
 import java.util.Date;
-
-
 
 /**
  *
@@ -31,26 +30,23 @@ public class InteractiveBrokersTrade extends Trade {
 
     private Contract contract;
     private Order order;
-    
+
     /**
-     * Constructor with all required parameters to open a new interactivebrokers trade.
-     * @param symbol
-     * @param symbolId
-     * @param assetType
+     * Constructor with all required parameters to open a new interactive brokers trade.
+     *
+     * @param asset
      * @param positionType
      * @param quantity
      * @param orderType
-     * @param signalOpenPrice 
      */
-    public InteractiveBrokersTrade(String symbol, int symbolId, String assetType, String positionType, int quantity, String orderType, double signalOpenPrice) {
-        super(symbol, symbolId, assetType, positionType, quantity, orderType, signalOpenPrice);
+    public InteractiveBrokersTrade(Asset asset, String positionType, int quantity, String orderType) {
+        super(asset, positionType, quantity, orderType);
     }
 
     /**
      * Constructor with all required parameters to create an open instance of an interactivebrokers trade.
-     * @param id
-     * @param symbol
-     * @param symbolId
+     *
+     * @param asset
      * @param assetType
      * @param positionType
      * @param openDate
@@ -59,11 +55,10 @@ public class InteractiveBrokersTrade extends Trade {
      * @param orderType
      * @param value
      * @param signalOpenPrice
-     * @param open 
+     * @param open
      */
-    public InteractiveBrokersTrade(int id, String symbol, int symbolId, String assetType, String positionType, Date openDate, double openPrice, int quantity, String orderType, double value, double signalOpenPrice, boolean open) {
-        //super(id, symbol, symbolId, assetType, positionType, openDate, openPrice, quantity, orderType, value, signalOpenPrice, open);
-        super(symbol, symbolId, assetType, positionType, quantity, orderType, signalOpenPrice); // check this
+    public InteractiveBrokersTrade(Asset asset, String assetType, String positionType, Date openDate, double openPrice, int quantity, String orderType, double value, double signalOpenPrice, boolean open) {
+        super(asset, positionType, quantity, orderType);
     }
 
     /**
@@ -77,14 +72,17 @@ public class InteractiveBrokersTrade extends Trade {
         order = new Order();
 
         contract.m_symbol = getSymbol();
-        contract.m_secType = getAssetType(); //STK
+        contract.m_secType = (getAssetType().equals("Stock") ? "stk" : "err"); // TODO validate input //STK
         contract.m_exchange = "SMART";
         contract.m_currency = "USD";
-        order.m_action = (getPositionType().equals("long") ? "BUY":"SELL"); // TODO validate input
+        order.m_action = (getPositionType().equals("long") ? "BUY" : "SELL"); // TODO validate input
         order.m_totalQuantity = getQuantity();
         order.m_orderType = getOrderType(); //MKT
 
-        ibClient.placeOrder(getId(), contract, order);  
+        ibClient.placeOrder(IBAlgoTrader.nextvalidTradeID, contract, order);
+        IBAlgoTrader.nextvalidTradeID++;
+
+        // TODO: if realtimemonitoring strategy and asset nit in live tick data list request market data
     }
 
     /**
@@ -92,7 +90,7 @@ public class InteractiveBrokersTrade extends Trade {
      */
     @Override
     public void close() {
-        
+
         contract = new Contract();
         order = new Order();
 
@@ -100,10 +98,11 @@ public class InteractiveBrokersTrade extends Trade {
         contract.m_secType = getAssetType(); //STK
         contract.m_exchange = "SMART";
         contract.m_currency = "USD";
-        order.m_action = (getPositionType().equals("long") ? "SELL":"BUY"); // TODO validate input
+        order.m_action = (getPositionType().equals("long") ? "SELL" : "BUY"); // TODO validate input
         order.m_totalQuantity = getQuantity();
         order.m_orderType = getOrderType(); //MKT
 
-        ibClient.placeOrder(getId(), contract, order);
+        ibClient.placeOrder(IBAlgoTrader.nextvalidTradeID, contract, order);
+        IBAlgoTrader.nextvalidTradeID++;
     }
 }
