@@ -13,27 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package au.com.jquant.algotrader.timer;
+package au.com.jquant.algotrader.timing;
 
+import static au.com.jquant.algotrader.IBAlgoTrader.strategies;
 import au.com.jquant.algotrader.strategy.PreCloseStrategy;
 import au.com.jquant.algotrader.strategy.Strategy;
-import java.util.List;
-import java.util.TimerTask;
 
 /**
  *
  * @author davidherod
  */
-public class PreCloseTimer extends TimerTask {
-
-    private final List<Strategy> stratergies;
-
-    public PreCloseTimer(List<Strategy> stratergies) {
-        this.stratergies = stratergies;
-    }
+public class PreCloseTimer implements Runnable{
     
     private void callPreCloseTasks(){
-        for(Strategy s : stratergies){
+        for(Strategy s : strategies){
             if(s instanceof PreCloseStrategy){
                 PreCloseStrategy preCloseStrategy = (PreCloseStrategy) s;
                 preCloseStrategy.onPreClose();

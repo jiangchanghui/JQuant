@@ -18,36 +18,34 @@ package au.com.jquant.algotrader.main;
 import au.com.jquant.algotrader.IBAlgoTrader;
 import au.com.jquant.algotrader.strategy.momentum.BollingerBreakout;
 import au.com.jquant.algotrader.strategy.Strategy;
+import au.com.jquant.algotrader.timing.MarketTime;
+import au.com.jquant.algotrader.timing.PreCloseTimer;
 import static au.com.jquant.backtest.strategy.Strategy.DATASET_SP500;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Duration;
-import org.joda.time.LocalDateTime;
+import au.com.jquant.util.SimpleThreadPool;
 
 /**
  *
  * @author davidherod
  */
 public class Main {
+    
+    private static final String host = null;
+    private static final int port = 7496; // Default TWS port
+    private static final int clientID = 0;
 
     /**
      * @param args the command line arguments
      * @throws java.lang.Exception
      */
     public static void main(String[] args) throws Exception {
-
-        TimeZone tz = TimeZone.getTimeZone("America/New_York");
-        Calendar c = Calendar.getInstance(tz);
-        System.out.println(c.get(Calendar.YEAR) + " "+ c.get(Calendar.MONTH) + " " + c.get(Calendar.DATE) + " " + c.get(Calendar.DAY_OF_WEEK) + " "  + c.get(Calendar.HOUR_OF_DAY) + ":" + c.get(Calendar.MINUTE) + ":" + c.get(Calendar.SECOND));
-        System.out.println("------");     
         
         //new SimpleThreadPool().updateSP500();
-        Strategy bollingerBreakout = new BollingerBreakout(10, 2.5, 0.5, 2);
+//        MarketTime.timeUntilOpen();
+//        MarketTime.timeUntilClose();
+//        System.out.println(MarketTime.millisecondsUntilOpen());
+        
 
+        Strategy bollingerBreakout = new BollingerBreakout(10, 2.5, 0.5, 2);
         bollingerBreakout.setMaxAllocation(20000);
         bollingerBreakout.setMaxPositionsOpen(10);
         bollingerBreakout.setPositionValue(1000);
@@ -56,56 +54,10 @@ public class Main {
 
         IBAlgoTrader algoTrader = new IBAlgoTrader();
         //algoTrader.addStrategy(bollingerBreakout);
+        algoTrader.execute(host, port, clientID);
+        
+        
+        
 
-        algoTrader.execute();
-
-//        IBAlgoTrader.ibClient.reqCurrentTime();
-//            Contract contract = new Contract();
-//            contract.m_secType = "stk";
-//            contract.m_symbol = "a";
-//            contract.m_exchange = "smart";
-//            contract.m_currency = "usd";
-//            
-//            IBAlgoTrader.ibClient.reqHistoricalData(1, contract, "20141114 00:00:00", "1 Y", "1 day", "TRADES", 1, 1, new Vector<TagValue>());
-//        IBAlgoTrader.ibClient.reqGlobalCancel();
-//        Strategy test = new Test();
-//        test.setTargetAssets(null);
-//        
-//        List<Asset> testTargetAsset = new ArrayList<>();
-//        Asset spy = new Stock();
-//        spy.setId(1);
-//        spy.setSymbol("spy");
-//        testTargetAsset.add(spy);
-//        test.setTargetAssets(testTargetAsset);
-        //        algoTrader.addStrategy(test);
-//
-//        IBAlgoTrader ib = new IBAlgoTrader();    
-//        ib.execute();
-//        Contract contract = new Contract();
-//        contract.m_secType = "stk";
-//        contract.m_symbol = "spy";
-//        contract.m_exchange = "smart";
-//        contract.m_currency = "usd";
-//        IBAlgoTrader.ibClient.reqHistoricalData(1, contract, "20140101 00:00:00", "1 Y", "1 day", "TRADES", 1, 1, new Vector<TagValue>());
-//        int count = 0;
-//        List<Asset> assets = DatasetFactory.getDataset(0);
-//        for (Asset a : assets) {
-//            System.out.println(count++);
-//            System.out.println(a.getSymbol());
-//            Contract contract = new Contract();
-//            contract.m_secType = "stk";
-//            contract.m_symbol = a.getSymbol();
-//            contract.m_exchange = "smart";
-//            contract.m_currency = "usd";
-//            
-//            //IBAlgoTrader.ibClient.reqHistoricalData(count, contract, "20140101 00:00:00", "1 Y", "1 day", "TRADES", 1, 1, new Vector<TagValue>());
-//            //IBAlgoTrader.ibClient.reqRealTimeBars(count, contract, 5, "MIDPOINT", false, new Vector<TagValue>());
-//            
-//            IBAlgoTrader.ibClient.reqMktData(count, contract, "", false, new Vector<TagValue>());
-//            Thread.sleep(1000);
-//            
-//            if(count > 10)
-//                break;
-//        }
     }
 }

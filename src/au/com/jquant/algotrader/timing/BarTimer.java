@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package au.com.jquant.algotrader.timer;
-
-import java.util.List;
-import java.util.TimerTask;
+package au.com.jquant.algotrader.timing;
 
 /**
  *
  * @author davidherod
  */
-public class BarTimer extends TimerTask {
+public class BarTimer implements Runnable{
 
     @Override
     public void run() {

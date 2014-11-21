@@ -85,8 +85,12 @@ public class BollingerBreakout extends Strategy implements PreCloseStrategy, Pos
         for (Trade trade : openTrades) {
             if (trade.getSymbolId() == symbolId) { // TODO and days open is > 0
                 if (pctChng(trade.getOpenPrice(), lastPrice) >= targetPercentageChange) {
-                    trade.close();
-                    openTrades.remove(trade);
+    // CHECK THIS   trade.close();             
+                    InteractiveBrokersTrade ibTrade = (InteractiveBrokersTrade)trade;
+                    ibTrade.close();
+                    openTrades.remove(ibTrade);
+                    
+                    //openTrades.remove(trade);
                 }
             }
         }
@@ -108,9 +112,9 @@ public class BollingerBreakout extends Strategy implements PreCloseStrategy, Pos
 
                 if (high > curUpperBand && preHigh < preUpperBand && positionOpenable()) {
                     System.out.println(asset.getSymbol());
-                    //Trade trade = new InteractiveBrokersTrade(asset,"long", 100, "MKT");
-                    //trade.open();
-                    //openTrades.add(trade);
+                    Trade trade = new InteractiveBrokersTrade(asset,"long", 100, "MKT",this.getClass().getSimpleName());
+                    trade.open();
+                    openTrades.add(trade);
                 }
             }
         }

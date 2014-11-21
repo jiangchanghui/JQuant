@@ -51,4 +51,12 @@ public abstract class Asset {
     public void setDescription(String description) {
         this.description = description;
     }  
+
+//    public List<Interval> getIntervals() {
+//        return intervals;
+//    }
+//
+//    public void setIntervals(List<Interval> intervals) {
+//        this.intervals = intervals;
+//    }
 }

@@ -15,23 +15,15 @@
  */
 package au.com.jquant.algotrader;
 
-import au.com.jquant.algotrader.strategy.FiveMinuteStrategy;
-import au.com.jquant.algotrader.strategy.OpenStrategy;
-import au.com.jquant.algotrader.strategy.PreCloseStrategy;
-import au.com.jquant.algotrader.strategy.PositionManager;
-import au.com.jquant.algotrader.strategy.RealtimeStrategy;
-import au.com.jquant.asset.Asset;
+import au.com.jquant.algotrader.marketdata.IBDataHandler;
 import au.com.jquant.algotrader.strategy.Strategy;
-import au.com.jquant.algotrader.timer.PreCloseTimer;
-import au.com.jquant.execution.Trade;
-import com.ib.client.Contract;
+import au.com.jquant.algotrader.timing.MarketClock;
+import au.com.jquant.algotrader.timing.MarketOpenTimer;
+import au.com.jquant.algotrader.timing.MarketTime;
+import au.com.jquant.algotrader.timing.PreCloseTimer;
 import com.ib.client.EClientSocket;
-import com.ib.client.TagValue;
-import com.ib.contracts.StkContract;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Timer;
 
 /**
  *
@@ -39,23 +31,21 @@ import java.util.Timer;
  */
 public class IBAlgoTrader {
 
-    public static List<Strategy> strategies = new ArrayList<>();
-    private Timer fiveMinuteTimer;
-    private Timer preCloseTimer;
-    private Timer openTimer;
-    private final Date preCloseTime = new Date(); // TODO set preclose time
-    public static final EClientSocket ibClient = new EClientSocket(new IBWrapper());
-    private final List<Asset> liveTickers = new ArrayList<>();
+    public static List<Strategy> strategies;
+    public static EClientSocket ibClient;
+    public MarketClock marketClock;
     public static int nextvalidTradeID;
-    private boolean marketOpen;
 
     public IBAlgoTrader() {
+        strategies = new ArrayList<>();
+        ibClient = new EClientSocket(new IBWrapper());
+        marketClock = new MarketClock();
     }
 
     /**
-     * Adds a strategy to list of strategies that will be executed.
+     * Adds a strategy to the list of strategies that will be executed.
      *
-     * @param strategy
+     * @param strategy a strategy that is to be executed.
      */
     public void addStrategy(Strategy strategy) {
         strategies.add(strategy);
@@ -64,88 +54,44 @@ public class IBAlgoTrader {
     /**
      * Executes the list of given strategies.
      *
-     * @throws Exception
+     * @param host URL of TWS instance.
+     * @param port port of TWS instance.
+     * @param clientID client ID to be associated with all actions performed.
+     * @throws Exception if unable to connect to TWS instance.
      */
-    public void execute() throws Exception {
-        ibClient.eConnect(null, 7496, 0);
+    public void execute(String host, int port, int clientID) throws Exception {
+
+        ibClient.eConnect(host, port, clientID);
+        new PreCloseTimer().run();
         if (ibClient.isConnected()) {
-            startTimers();
-            reqRealTimeData();
+            while (true) {
+
+                if (MarketTime.marketIsOpen()) {
+                    marketClock.start();
+                    Thread.sleep(MarketTime.millisecondsUntilClose());
+                    marketClock.stop();
+                    // TODO: Wait 15 then update EOD data
+                    new IBDataHandler().reqRealTimeData(); //request rt data
+
+                } else {
+
+                    if (MarketTime.millisecondsUntilOpen() - 7200000 > 0) {
+                        Thread.sleep(MarketTime.millisecondsUntilOpen() - 7200000); // Allow 2 hours before open to check for time changes due to daylight saving.                 
+                    }
+                    MarketTime.timeUntilOpen();
+                    Thread.sleep(MarketTime.millisecondsUntilOpen());
+
+                    new MarketOpenTimer().callMatketOpenTasks(); // TODO: Run in seperate thread.
+                    marketClock.start();
+                    Thread.sleep(MarketTime.millisecondsUntilClose());
+                    marketClock.stop();
+                    // TODO: Wait 15 then update EOD data
+                    //new IBDataHandler().reqRealTimeData(); //request rt data
+                }
+            }
+
         } else {
-            throw new Exception("Error: could not connect to TWS");
+            throw new Exception("Error: could not connect to TWS. Please check that TWS is open the correct host and port values are correct.");
         }
     }
-
-    /**
-     * Requests real-time data for assets of strategies that require it.
-     */
-    public void reqRealTimeData() {
-        for (Strategy s : strategies) {
-            if (s instanceof RealtimeStrategy) {
-                for (Asset a : s.getTargetAssets()) {
-                    //ibClient.reqMktData(a.getId(), new StkContract(a.getSymbol()), null, false, new ArrayList<TagValue>());
-                    
-                    Contract contract = new Contract();
-                    contract.m_symbol = "aud"; //AUD
-                    contract.m_secType = "cash"; //CASH
-                    contract.m_exchange = "IDEALPRO"; //IDEALPRO
-                    contract.m_currency = "USD";
-                     ibClient.reqMktData(a.getId(), contract, null, false, new ArrayList<TagValue>());
-                }
-                if (s instanceof PositionManager) { // and ticker is not already being used
-                    for (Trade t : s.getOpenTrades()) {
-                        ibClient.reqMktData(t.getId(), new StkContract(t.getSymbol()), null, false, new ArrayList<TagValue>());
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Calls the onTick method of strategies that require real-time date when
-     * new data of target assets becomes available via TWS.
-     *
-     * @param symbolId
-     * @param price
-     */
-    public static void manageLiveTickData(int symbolId, double price) {
-        for (Strategy strategy : strategies) {
-            if (strategy instanceof RealtimeStrategy) {
-                for (Asset a : strategy.getTargetAssets()) {
-                    if (a.getId() == symbolId) {
-                        RealtimeStrategy realtimeStrategy = (RealtimeStrategy) strategy;
-                        realtimeStrategy.onTick(symbolId, price);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Starts the timers required by the list of strategies.
-     */
-    private void startTimers() {
-        
-        // TODO Check time for changes  
-        // TODO Check timezone is New York
-        
-        //boolean fiveMinuteIsRunning = false;
-        boolean preCloseIsRunning = false;
-        boolean openStrategyIsRunning = false;
-
-        for (Strategy s : strategies) {
-            
-            if (s instanceof PreCloseStrategy && !preCloseIsRunning) {
-                preCloseTimer = new Timer("PreCloseTimer");
-                preCloseTimer.schedule(new PreCloseTimer(strategies), preCloseTime, 86400000);
-                preCloseIsRunning = true;
-            }
-            if (s instanceof OpenStrategy && !openStrategyIsRunning) {
-                openTimer = new Timer("OpenTimer");
-                openTimer.schedule(new PreCloseTimer(strategies), preCloseTime, 86400000);
-                preCloseIsRunning = true;
-            }
-        }
-    }
-
 }

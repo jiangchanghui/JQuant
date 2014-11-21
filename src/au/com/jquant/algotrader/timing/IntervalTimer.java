@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package au.com.jquant.execution;
-
-import java.util.List;
+package au.com.jquant.algotrader.timing;
 
 /**
  *
  * @author davidherod
  */
-public interface TradeDAO {
-    public List<Trade> getOpenTrades(String strategyID);
-    public int createTrade(Trade trade);
+public class IntervalTimer implements Runnable{
+
+    @Override
+    public void run() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
 }

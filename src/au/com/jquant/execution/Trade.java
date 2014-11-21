@@ -15,6 +15,7 @@
  */
 package au.com.jquant.execution;
 
+import au.com.jquant.algotrader.IBAlgoTrader;
 import au.com.jquant.asset.Asset;
 import java.util.Date;
 import java.util.List;
@@ -57,6 +58,7 @@ public class Trade {
      * @param orderType 
      */
     public Trade(Asset asset, String positionType, int quantity, String orderType) {    
+        this.id = IBAlgoTrader.nextvalidTradeID;
         this.symbolId = asset.getId();
         this.symbol = asset.getSymbol();  
         this.assetType = asset.getClass().getSimpleName();

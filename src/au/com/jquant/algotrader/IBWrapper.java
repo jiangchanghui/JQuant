@@ -15,6 +15,7 @@
  */
 package au.com.jquant.algotrader;
 
+import au.com.jquant.algotrader.marketdata.IBDataHandler;
 import com.ib.client.CommissionReport;
 import com.ib.client.Contract;
 import com.ib.client.ContractDetails;
@@ -34,7 +35,7 @@ public class IBWrapper implements EWrapper {
     @Override
     public synchronized void tickPrice(int tickerId, int field, double price, int canAutoExecute) {
         System.out.println("tickprice");
-        IBAlgoTrader.manageLiveTickData(tickerId, price);
+        IBDataHandler.manageLiveTickData(tickerId, price);
         System.out.println(field + " " + price);
     }
 

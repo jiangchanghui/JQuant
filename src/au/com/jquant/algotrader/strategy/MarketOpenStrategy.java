@@ -13,15 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package au.com.jquant.execution;
-
-import java.util.List;
+package au.com.jquant.algotrader.strategy;
 
 /**
  *
  * @author davidherod
  */
-public interface TradeDAO {
-    public List<Trade> getOpenTrades(String strategyID);
-    public int createTrade(Trade trade);
+public interface MarketOpenStrategy {
+    public void onMarketOpen();
 }

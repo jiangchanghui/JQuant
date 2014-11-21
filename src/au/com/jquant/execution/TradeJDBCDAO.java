@@ -15,6 +15,7 @@
  */
 package au.com.jquant.execution;
 
+import au.com.jquant.asset.Interval;
 import au.com.jquant.asset.stock.StockJDBCDAO;
 import au.com.jquant.factory.dao.JDBCDAOFactory;
 import java.sql.Connection;
@@ -45,12 +46,12 @@ public class TradeJDBCDAO implements TradeDAO {
         try {
             connection = JDBCDAOFactory.createConnection();
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM trades WHERE strategy = \"" + strategy + "\" AND open = true;"); // TODO test code. and join on symbol id to get symbol.
+            resultSet = statement.executeQuery("SELECT * FROM trade WHERE strategy = \"" + strategy + "\" AND open = true;"); // TODO test code. and join on symbol id to get symbol.
 
             while (resultSet.next() == true) {
                 int id = resultSet.getInt("id");
                 int symbolId = resultSet.getInt("symbol_id");
-                String symbol = resultSet.getString("strategy");           
+                String symbol = resultSet.getString("strategy");
                 String assetType = resultSet.getString("asset_type");
                 String positionType = resultSet.getString("position_type");
                 Date openDate = resultSet.getDate("position_type");
@@ -60,7 +61,7 @@ public class TradeJDBCDAO implements TradeDAO {
                 int value = resultSet.getInt("value");
                 double signalOpenPrice = resultSet.getDouble("signal_open_price");
                 boolean isOpen = resultSet.getBoolean("open");
-                
+
                 Trade trade = new Trade(id, strategy, symbolId, symbol, assetType, positionType, openDate, openPrice, quantity, orderType, value, signalOpenPrice, isOpen);
                 trades.add(trade);
             }
@@ -92,5 +93,50 @@ public class TradeJDBCDAO implements TradeDAO {
 
         }
         return trades;
+    }
+
+    @Override
+    public int createTrade(Trade trade) {
+
+        int result = 0;
+
+        try {
+            connection = JDBCDAOFactory.createConnection();
+            preparedStatement = connection.prepareStatement("INSERT INTO trade VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+            preparedStatement.setInt(1, trade.getId());
+            preparedStatement.setString(2, trade.getStrategy());
+            preparedStatement.setInt(3, trade.getSymbolId());
+            preparedStatement.setString(4, trade.getAssetType());
+            preparedStatement.setString(5, trade.getPositionType());
+            preparedStatement.setDate(6, new java.sql.Date(trade.getOpenDate().getTime()));
+            preparedStatement.setDouble(7, trade.getOpenPrice());
+            preparedStatement.setInt(8, trade.getQuantity());
+            preparedStatement.setString(9, trade.getOrderType());
+            preparedStatement.setDouble(10, trade.getValue());
+            preparedStatement.setDouble(11, trade.getValue());
+            preparedStatement.setDouble(12, trade.getValue());
+            
+            result = preparedStatement.executeUpdate();
+
+        } catch (ClassNotFoundException | SQLException ex) {
+            Logger.getLogger(StockJDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            if (preparedStatement != null) {
+                try {
+                    preparedStatement.close();
+                } catch (SQLException e) {
+
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+
+                }
+            }
+        }
+        return result;
     }
 }

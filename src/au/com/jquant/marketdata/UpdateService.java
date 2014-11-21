@@ -43,7 +43,7 @@ public class UpdateService implements Runnable {
         //DAOFactory jdbcDao = DAOFactory.getDAOFactory(DAOFactory.JDBC);       
         //StockDAO stockDao = jdbcDao.getStockDAO();
         StockDAO stockDao = new StockJDBCDAO();
-        List<Interval> intervals = YahooClient.getDailyHistoricalData(symbol, "2014-09-01", "2014-11-13");
+        List<Interval> intervals = YahooClient.getDailyHistoricalData(symbol, "2014-01-01", "2014-11-21");
         stockDao.setHistoricalDaily(symbol, intervals);
     }
 

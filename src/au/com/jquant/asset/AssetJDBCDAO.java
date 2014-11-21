@@ -106,7 +106,9 @@ public class AssetJDBCDAO implements AssetDAO {
         try {
             connection = JDBCDAOFactory.createConnection();
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM sp_500");
+            resultSet = statement.executeQuery("SELECT  s.id, sp.symbol, sp.description, sp.industry_devision, sp.industry_sector, sp.industry_group, sp.market_cap\n" +
+                                                "FROM sp_500 sp, stock s\n" +
+                                                "WHERE sp.symbol = s.symbol");
 
             while (resultSet.next() == true) {
                 Stock stock = new Stock();
@@ -116,6 +118,7 @@ public class AssetJDBCDAO implements AssetDAO {
                 stock.setIndustrySector(resultSet.getString("industry_sector"));
                 stock.setIndustryGroup(resultSet.getString("industry_group"));
                 stock.setMarketCap(resultSet.getLong("market_cap"));
+                stock.setId(resultSet.getInt("id"));
                 assets.add(stock);
             }
 
