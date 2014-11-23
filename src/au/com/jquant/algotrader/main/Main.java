@@ -16,7 +16,7 @@
 package au.com.jquant.algotrader.main;
 
 import au.com.jquant.algotrader.IBAlgoTrader;
-import au.com.jquant.algotrader.strategy.momentum.BollingerBreakout;
+import au.com.jquant.algotrader.strategy.user.BollingerBreakout;
 import au.com.jquant.algotrader.strategy.Strategy;
 import au.com.jquant.algotrader.timing.MarketTime;
 import au.com.jquant.algotrader.timing.PreCloseTimer;

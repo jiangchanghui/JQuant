@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package au.com.jquant.marketdata.yahoofinance;
+package au.com.jquant.marketdata;
 
 import au.com.jquant.asset.Interval;
 import au.com.jquant.asset.stock.Stock;

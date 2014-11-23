@@ -13,29 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package au.com.jquant.algotrader.strategy.momentum;
+package au.com.jquant.algotrader.strategy.user;
 
-import au.com.jquant.algotrader.IBAlgoTrader;
 import au.com.jquant.algotrader.strategy.RealtimeStrategy;
 import au.com.jquant.algotrader.strategy.Strategy;
-import au.com.jquant.execution.InteractiveBrokersTrade;
+import au.com.jquant.asset.Asset;
+import au.com.jquant.asset.Interval;
+import java.util.List;
 
 /**
  *
  * @author davidherod
  */
-public class Test extends Strategy implements RealtimeStrategy{
+public class FXTest extends Strategy implements RealtimeStrategy {
 
-    private int i = 20;
+    List<Asset> pairs = getTargetAssets();
+
     @Override
     public void onTick(int symbolId, double lastPrice) {
-        //i++;
-        //System.out.println(symbolId + " " + lastPrice);
-        System.out.println("test on tick");
-        //InteractiveBrokersTrade t = new InteractiveBrokersTrade("spy", 10, "stk", "long", 100, "mkt", 100);
-        //t.setId(i);
-        //t.open();
-       
+        addTick(symbolId, lastPrice);
+        
     }
     
+    public void addTick(int symbolId, double lastPrice){
+        for(Asset a: pairs){
+            if(a.getId()==symbolId){
+            List<Interval> ticks = a.getIntervals();
+            Interval i = new Interval();
+            i.setClose(lastPrice);
+            //a.setIntervals(ticks);
+            }
+        }
+    }
+
+    public static void action() {
+
+    }
+
 }

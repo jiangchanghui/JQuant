@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package au.com.jquant.backtest.strategy.directional;
+package au.com.jquant.backtest.strategy.user;
 
 import au.com.jquant.asset.Interval;
 import au.com.jquant.execution.Trade;

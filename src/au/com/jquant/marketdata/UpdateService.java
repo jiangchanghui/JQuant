@@ -20,7 +20,6 @@ import au.com.jquant.asset.Interval;
 import au.com.jquant.asset.stock.StockDAO;
 import au.com.jquant.asset.stock.StockJDBCDAO;
 import au.com.jquant.factory.dao.DAOFactory;
-import au.com.jquant.marketdata.yahoofinance.YahooClient;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;

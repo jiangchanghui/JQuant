@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package au.com.jquant.backtest.strategy.momentum;
+package au.com.jquant.backtest.strategy.user;
 
 import au.com.jquant.analytics.indicators.BollingerBands;
 import au.com.jquant.backtest.strategy.Strategy;
