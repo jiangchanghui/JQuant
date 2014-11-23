@@ -33,10 +33,23 @@ public class IBAlgoTrader {
 
     public static List<Strategy> strategies;
     public static EClientSocket ibClient;
-    public MarketClock marketClock;
+    private final MarketClock marketClock;
     public static int nextvalidTradeID;
+    
+    private final String host;
+    private final int port;
+    private final int clientID;
 
-    public IBAlgoTrader() {
+    /**
+     * 
+     * @param host URL of TWS instance.
+     * @param port port of TWS instance.
+     * @param clientID client ID to be associated with all actions performed.
+     */
+    public IBAlgoTrader(String host, int port, int clientID) {
+        this.host = host;
+        this.port = port;
+        this.clientID = clientID;
         strategies = new ArrayList<>();
         ibClient = new EClientSocket(new IBWrapper());
         marketClock = new MarketClock();
@@ -54,15 +67,13 @@ public class IBAlgoTrader {
     /**
      * Executes the list of given strategies.
      *
-     * @param host URL of TWS instance.
-     * @param port port of TWS instance.
-     * @param clientID client ID to be associated with all actions performed.
      * @throws Exception if unable to connect to TWS instance.
      */
-    public void execute(String host, int port, int clientID) throws Exception {
+    public void execute() throws Exception {
 
         ibClient.eConnect(host, port, clientID);
-        new PreCloseTimer().run();
+        //new PreCloseTimer().run();
+        ibClient.reqGlobalCancel();
         if (ibClient.isConnected()) {
             while (true) {
 

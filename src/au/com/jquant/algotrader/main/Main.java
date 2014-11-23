@@ -30,7 +30,7 @@ import au.com.jquant.util.SimpleThreadPool;
 public class Main {
     
     private static final String host = null;
-    private static final int port = 7496; // Default TWS port
+    private static final int port = 7496;
     private static final int clientID = 0;
 
     /**
@@ -39,12 +39,6 @@ public class Main {
      */
     public static void main(String[] args) throws Exception {
         
-        //new SimpleThreadPool().updateSP500();
-//        MarketTime.timeUntilOpen();
-//        MarketTime.timeUntilClose();
-//        System.out.println(MarketTime.millisecondsUntilOpen());
-        
-
         Strategy bollingerBreakout = new BollingerBreakout(10, 2.5, 0.5, 2);
         bollingerBreakout.setMaxAllocation(20000);
         bollingerBreakout.setMaxPositionsOpen(10);
@@ -52,12 +46,9 @@ public class Main {
         bollingerBreakout.setTargetAssets(DATASET_SP500);
         bollingerBreakout.setRandomiseDataset(true);
 
-        IBAlgoTrader algoTrader = new IBAlgoTrader();
-        //algoTrader.addStrategy(bollingerBreakout);
-        algoTrader.execute(host, port, clientID);
+        IBAlgoTrader algoTrader = new IBAlgoTrader(host, port, clientID);
+        algoTrader.addStrategy(bollingerBreakout);
+        algoTrader.execute();
         
-        
-        
-
     }
 }
