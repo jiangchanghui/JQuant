@@ -15,6 +15,7 @@
  */
 package au.com.jquant.execution;
 
+import au.com.jquant.algotrader.timing.MarketTime;
 import au.com.jquant.asset.Interval;
 import au.com.jquant.asset.stock.StockJDBCDAO;
 import au.com.jquant.factory.dao.JDBCDAOFactory;
@@ -23,6 +24,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -46,19 +48,26 @@ public class TradeJDBCDAO implements TradeDAO {
         try {
             connection = JDBCDAOFactory.createConnection();
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM trade WHERE strategy = \"" + strategy + "\" AND open = true;"); // TODO test code. and join on symbol id to get symbol.
+            preparedStatement = connection.prepareStatement("SELECT t.id, t.strategy, t.symbol_id, s.symbol, t.asset_type, t.position_type, t.open_date, t.open_price, t.quantity, t.order_type, t.value, signal_open_price, t.open\n"
+                    + "FROM trade t, stock s\n"
+                    + "WHERE t.symbol_id = s.id\n"
+                    + "AND t.strategy = ?;");
+            preparedStatement.setString(1, strategy);
+            resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next() == true) {
                 int id = resultSet.getInt("id");
+                //String strategy = resultSet.getString('strategy');
                 int symbolId = resultSet.getInt("symbol_id");
-                String symbol = resultSet.getString("strategy");
+                String symbol = resultSet.getString("symbol");
+                //String symbol = resultSet.getString("strategy");        
                 String assetType = resultSet.getString("asset_type");
                 String positionType = resultSet.getString("position_type");
-                Date openDate = resultSet.getDate("position_type");
-                int openPrice = resultSet.getInt("open_price");
+                Date openDate = resultSet.getDate("open_date");
+                double openPrice = resultSet.getDouble("open_price");
                 int quantity = resultSet.getInt("quantity");
                 String orderType = resultSet.getString("order_type");
-                int value = resultSet.getInt("value");
+                double value = resultSet.getDouble("value");
                 double signalOpenPrice = resultSet.getDouble("signal_open_price");
                 boolean isOpen = resultSet.getBoolean("open");
 
@@ -109,14 +118,14 @@ public class TradeJDBCDAO implements TradeDAO {
             preparedStatement.setInt(3, trade.getSymbolId());
             preparedStatement.setString(4, trade.getAssetType());
             preparedStatement.setString(5, trade.getPositionType());
-            preparedStatement.setDate(6, new java.sql.Date(trade.getOpenDate().getTime()));
+            preparedStatement.setTimestamp(6, Timestamp.from(trade.getOpenDate().toInstant()));
             preparedStatement.setDouble(7, trade.getOpenPrice());
             preparedStatement.setInt(8, trade.getQuantity());
             preparedStatement.setString(9, trade.getOrderType());
             preparedStatement.setDouble(10, trade.getValue());
             preparedStatement.setDouble(11, trade.getValue());
-            preparedStatement.setDouble(12, trade.getValue());
-            
+            preparedStatement.setBoolean(12, trade.isOpen());
+
             result = preparedStatement.executeUpdate();
 
         } catch (ClassNotFoundException | SQLException ex) {

@@ -57,7 +57,7 @@ public class Trade {
      * @param quantity
      * @param orderType 
      */
-    public Trade(Asset asset, String positionType, int quantity, String orderType) {    
+    public Trade(Asset asset, String positionType, int quantity, String orderType, String strategy) {    
         this.id = IBAlgoTrader.nextvalidTradeID;
         this.symbolId = asset.getId();
         this.symbol = asset.getSymbol();  
@@ -66,6 +66,7 @@ public class Trade {
         this.quantity = quantity;
         this.orderType = orderType;      
         this.open = true;
+        this.strategy = strategy;
     }
 
     /** Constructor with all required parameters to create an open-trade instance.
@@ -84,11 +85,26 @@ public class Trade {
      * @param signalOpenPrice
      * @param open 
      */
+    public Trade(int id, String strategy, int symbolId, String assetType, String positionType, Date openDate, double openPrice, int quantity, String orderType, double value, double signalOpenPrice, boolean open) {
+        this.id = id;
+        this.strategy = strategy;
+        this.symbolId = symbolId;
+        this.assetType = assetType;
+        this.positionType = positionType;
+        this.openDate = openDate;
+        this.openPrice = openPrice;
+        this.quantity = quantity;
+        this.orderType = orderType;
+        this.value = value;
+        this.signalOpenPrice = signalOpenPrice;
+        this.open = open;
+    }
+    
     public Trade(int id, String strategy, int symbolId, String symbol, String assetType, String positionType, Date openDate, double openPrice, int quantity, String orderType, double value, double signalOpenPrice, boolean open) {
         this.id = id;
         this.strategy = strategy;
-        this.symbol = symbol;
         this.symbolId = symbolId;
+        this.symbol = symbol;
         this.assetType = assetType;
         this.positionType = positionType;
         this.openDate = openDate;

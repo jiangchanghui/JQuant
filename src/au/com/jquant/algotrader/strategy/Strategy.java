@@ -19,6 +19,7 @@ import au.com.jquant.algotrader.dataset.DatasetFactory;
 import au.com.jquant.asset.Asset;
 import au.com.jquant.execution.Trade;
 import au.com.jquant.execution.TradeJDBCDAO;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -33,7 +34,6 @@ public class Strategy {
     private double valuePositionsOpen;
     private double positionValue;
     private int positionSize;
-    private boolean randomiseDataset;
     protected List<Trade> openTrades;
     protected List<Asset> targetAssets;
 
@@ -41,7 +41,8 @@ public class Strategy {
     // create interface for where real time position monitoring to close requested
 
     public Strategy() {
-        this.openTrades = new TradeJDBCDAO().getOpenTrades(this.getClass().getSimpleName());      
+        this.openTrades = new TradeJDBCDAO().getOpenTrades(this.getClass().getSimpleName()); 
+        positionsOpen = openTrades.size();
     }
  
     public int getMaxAllocation() {
@@ -92,14 +93,6 @@ public class Strategy {
         this.positionSize = positionSize;
     }
 
-    public boolean isRandomiseDataset() {
-        return randomiseDataset;
-    }
-
-    public void setRandomiseDataset(boolean randomiseDataset) {
-        this.randomiseDataset = randomiseDataset;
-    }
-
     public List<Trade> getOpenTrades() {
         return openTrades;
     }
@@ -120,8 +113,17 @@ public class Strategy {
         this.targetAssets = assetList;
     }
 
-    protected boolean positionOpenable() {
-        return positionsOpen < maxPositionsOpen && (positionValue + valuePositionsOpen) < maxAllocation;
+    protected boolean positionOpenable() {    
+        //!(positionsOpen > maxPositionsOpen || (positionValue + valuePositionsOpen) < maxAllocation);
+        return positionsOpen < maxPositionsOpen;
+    }
+       
+    public void randomiseDataset() {
+        Collections.shuffle(targetAssets);
+    }
+    
+    protected void adjustPositonValues(){
+        positionsOpen++;
     }
 
 }

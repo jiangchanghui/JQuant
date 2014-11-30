@@ -21,10 +21,10 @@ import au.com.jquant.algotrader.strategy.PositionManager;
 import au.com.jquant.algotrader.strategy.RealtimeStrategy;
 import au.com.jquant.algotrader.strategy.Strategy;
 import au.com.jquant.asset.Asset;
+import au.com.jquant.asset.Interval;
 import au.com.jquant.execution.Trade;
 import com.ib.client.Contract;
 import com.ib.client.TagValue;
-import com.ib.contracts.StkContract;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,10 +56,19 @@ public class IBDataHandler {
                     contract.m_currency = "USD";
                     ibClient.reqMktData(a.getId(), contract, null, false, new ArrayList<TagValue>());
                 }
-                if (s instanceof PositionManager) { // and ticker is not already being used
-                    for (Trade t : s.getOpenTrades()) {
-                        ibClient.reqMktData(t.getId(), new StkContract(t.getSymbol()), null, false, new ArrayList<TagValue>());
-                    }
+
+            }
+            if (s instanceof PositionManager) { // and ticker is not already being used
+                for (Trade t : s.getOpenTrades()) {
+                    Contract contract = new Contract();
+                    contract.m_symbol = t.getSymbol(); //AUD
+                    contract.m_secType = (t.getAssetType().equals("Stock") ? "stk" : "err"); // TODO validate input //STK
+                    contract.m_exchange = "smart"; //IDEALPRO FIX THIS!!! SO FX can be used
+                    contract.m_currency = "usd";
+
+                    ibClient.reqMktData(t.getSymbolId(), contract, null, false, new ArrayList<TagValue>());
+                    //liveTickers.add(t.getAssetType());
+             
                 }
             }
         }
@@ -83,9 +92,19 @@ public class IBDataHandler {
             }
         }
     }
+
+    public static void cancelMktData() {
+
+    }
     
-    public static void cancelMktData(){
-        
+    private void addTick(int symbolID, double price){
+        for(Asset a : liveTickers){
+            if(a.getId() == symbolID){
+                Interval i = new Interval();
+                i.setClose(price);
+                //a.setIntervals(a.getIntervals().add(i));
+            }
+        }
     }
 
 }

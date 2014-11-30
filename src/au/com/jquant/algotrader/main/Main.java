@@ -35,13 +35,14 @@ public class Main {
      * @throws java.lang.Exception
      */
     public static void main(String[] args) throws Exception {
-        
+
+
         Strategy bollingerBreakout = new BollingerBreakout(10, 2.5, 0.5, 2);
         bollingerBreakout.setMaxAllocation(20000);
-        bollingerBreakout.setMaxPositionsOpen(10);
+        bollingerBreakout.setMaxPositionsOpen(6);
         bollingerBreakout.setPositionValue(1000);
         bollingerBreakout.setTargetAssets(DATASET_SP500);
-        bollingerBreakout.setRandomiseDataset(true);
+        bollingerBreakout.randomiseDataset();
 
         IBAlgoTrader algoTrader = new IBAlgoTrader(host, port, clientID);
         algoTrader.addStrategy(bollingerBreakout);

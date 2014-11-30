@@ -20,6 +20,8 @@ import com.ib.client.Contract;
 import static au.com.jquant.algotrader.IBAlgoTrader.*;
 import au.com.jquant.asset.Asset;
 import com.ib.client.Order;
+import com.ib.client.TagValue;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -27,10 +29,6 @@ import java.util.Date;
  * @author davidherod
  */
 public class InteractiveBrokersTrade extends Trade {
-
-    private Contract contract;
-    private Order order;
-    private String strategy;
 
     /**
      * Constructor with all required parameters to open a new interactive brokers trade.
@@ -42,8 +40,7 @@ public class InteractiveBrokersTrade extends Trade {
      * @param strategy The name of the strategy executing the trade.
      */
     public InteractiveBrokersTrade(Asset asset, String positionType, int quantity, String orderType, String strategy) {
-        super(asset, positionType, quantity, orderType);
-        this.strategy = strategy;
+        super(asset, positionType, quantity, orderType, strategy);
     }
 
     /**
@@ -59,9 +56,10 @@ public class InteractiveBrokersTrade extends Trade {
      * @param value
      * @param signalOpenPrice
      * @param open
+     * @param strategy
      */
-    public InteractiveBrokersTrade(Asset asset, String assetType, String positionType, Date openDate, double openPrice, int quantity, String orderType, double value, double signalOpenPrice, boolean open) {
-        super(asset, positionType, quantity, orderType);
+    public InteractiveBrokersTrade(Asset asset, String assetType, String positionType, Date openDate, double openPrice, int quantity, String orderType, double value, double signalOpenPrice, boolean open, String strategy) {
+        super(asset, positionType, quantity, orderType, strategy);
     }
 
     /**
@@ -69,15 +67,12 @@ public class InteractiveBrokersTrade extends Trade {
      */
     @Override
     public void open() {
-
-        setOpenDate(new Date());
-        
-        TradeJDBCDAO tradeJDBCDAO = new TradeJDBCDAO();
-        tradeJDBCDAO.createTrade(this);
+        Contract contract;
+        Order order;
 
         contract = new Contract();
         order = new Order();
-        
+
         contract.m_symbol = getSymbol();
         contract.m_secType = (getAssetType().equals("Stock") ? "stk" : "err"); // TODO validate input //STK
         contract.m_exchange = "SMART";
@@ -85,11 +80,13 @@ public class InteractiveBrokersTrade extends Trade {
         order.m_action = (getPositionType().equals("long") ? "BUY" : "SELL"); // TODO validate input
         order.m_totalQuantity = getQuantity();
         order.m_orderType = getOrderType(); //MKT
-        
+
+        ibClient.reqMktData(getSymbolId(), contract, null, false, new ArrayList<TagValue>());
+
         ibClient.placeOrder(IBAlgoTrader.nextvalidTradeID, contract, order);
         IBAlgoTrader.nextvalidTradeID++;
-        setId(nextvalidTradeID);
-        
+        setId(nextvalidTradeID); //TODO fix
+
         // TODO: if realtimemonitoring strategy and asset nit in live tick data list request market data
     }
 
@@ -98,6 +95,8 @@ public class InteractiveBrokersTrade extends Trade {
      */
     @Override
     public void close() {
+        Contract contract;
+        Order order;
 
         contract = new Contract();
         order = new Order();

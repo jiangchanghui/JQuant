@@ -73,16 +73,17 @@ public class IBAlgoTrader {
 
         ibClient.eConnect(host, port, clientID);
         //new PreCloseTimer().run();
-        ibClient.reqGlobalCancel();
+        //ibClient.reqGlobalCancel();
         if (ibClient.isConnected()) {
             while (true) {
 
                 if (MarketTime.marketIsOpen()) {
+                    new IBDataHandler().reqRealTimeData(); //request rt data
                     marketClock.start();
                     Thread.sleep(MarketTime.millisecondsUntilClose());
                     marketClock.stop();
                     // TODO: Wait 15 then update EOD data
-                    new IBDataHandler().reqRealTimeData(); //request rt data
+                    
 
                 } else {
 

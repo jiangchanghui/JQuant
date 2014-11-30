@@ -36,7 +36,7 @@ public class IBWrapper implements EWrapper {
     public synchronized void tickPrice(int tickerId, int field, double price, int canAutoExecute) {
         System.out.println("tickprice");
         IBDataHandler.manageLiveTickData(tickerId, price);
-        System.out.println(field + " " + price);
+        System.out.println(field + " "+ tickerId + " " + price);
     }
 
     @Override
@@ -71,12 +71,13 @@ public class IBWrapper implements EWrapper {
         System.out.println(status);
         System.out.println(filled);
         System.out.println(remaining);
+        System.out.println(avgFillPrice);
     }
 
     @Override
     public void openOrder(int orderId, Contract contract, Order order, OrderState orderState) {
         System.out.println("openorder");
-        System.out.println(orderId);
+        System.out.println(orderId + "orderid");
         System.out.println(contract.m_symbol);
         System.out.println(contract.m_secType);
         System.out.println(contract.m_conId);
@@ -85,6 +86,14 @@ public class IBWrapper implements EWrapper {
         System.out.println(order.m_activeStartTime);
         System.out.println(order.m_clientId);
         System.out.println(order.m_permId);
+        System.out.println(orderState.m_commission + "commission");
+        System.out.println(orderState.m_commissionCurrency +"currency");
+        System.out.println(orderState.m_equityWithLoan + "ewith");
+        System.out.println(orderState.m_initMargin);
+        System.out.println(orderState.m_maxCommission +"maxcom");
+        System.out.println(orderState.m_minCommission);
+        System.out.println(orderState.m_status);
+        System.out.println(orderState.m_warningText);
     }
 
     @Override
@@ -140,6 +149,7 @@ public class IBWrapper implements EWrapper {
         System.out.println(contract.m_symbol);
         System.out.println(contract.m_currency);
         System.out.println(execution.m_shares);
+        System.out.println(execution.m_avgPrice);
     }
 
     @Override
@@ -234,6 +244,7 @@ public class IBWrapper implements EWrapper {
         System.out.println(commissionReport.m_execId);
         System.out.println(commissionReport.m_realizedPNL);
 
+
     }
 
     @Override
@@ -292,6 +303,10 @@ public class IBWrapper implements EWrapper {
     public void error(int id, int errorCode, String errorMsg) {
         System.out.println("error message");
         System.out.println(errorMsg);
+        System.out.println("error code");
+        System.out.println(errorCode);
+        System.out.println("id");
+        System.out.println(id);
     }
 
     @Override

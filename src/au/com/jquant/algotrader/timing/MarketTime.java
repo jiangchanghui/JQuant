@@ -15,11 +15,17 @@
  */
 package au.com.jquant.algotrader.timing;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalField;
+import java.util.Date;
 
 /**
  *
@@ -28,7 +34,15 @@ import java.time.temporal.ChronoUnit;
 public class MarketTime {
 
     public static boolean marketIsOpen() {
-        return false;
+        return true;
+    }
+    
+    public static Timestamp timeInNY(){
+        ZoneId zone = ZoneId.of("America/New_York");
+        LocalDateTime dateTime = LocalDateTime.now(zone);
+      
+        Timestamp ts = Timestamp.valueOf(dateTime);
+        return ts;
     }
 
     public static void timeUntilOpen() {
